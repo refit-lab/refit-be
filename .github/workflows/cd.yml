@@ -73,9 +73,14 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/ubuntu/actions-runner/_work/refit-be/refit-be/docker
+            mkdir -p /home/ubuntu/refit-be/docker
+            cd /home/ubuntu/refit-be/docker
+
             echo "$ENV" > ./.env
             echo "PROFILE=prod" >> ./.env
+
+            scp $GITHUB_WORKSPACE/docker/docker-compose.yml ubuntu@${{ secrets.SSH_HOST }}:/home/ubuntu/refit-be/docker/
+            scp $GITHUB_WORKSPACE/build/libs/*.jar ubuntu@${{ secrets.SSH_HOST }}:/home/ubuntu/refit-be/docker/app.jar
 
             docker compose -f docker-compose.yml pull
             docker compose -f docker-compose.yml up -d --build
