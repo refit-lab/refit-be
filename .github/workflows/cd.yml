@@ -79,6 +79,7 @@ jobs:
             if [ ! -d ".git" ]; then
               git clone https://github.com/${{ github.repository }} .
             else
+              git reset --hard
               git pull origin main
             fi
 
@@ -87,5 +88,5 @@ jobs:
             echo "$ENV" > ./.env
             echo "PROFILE=prod" >> ./.env
 
-            docker compose -f docker-compose.yml pull
-            docker compose -f docker-compose.yml up -d --build
+            docker compose pull
+            docker compose up -d --build
