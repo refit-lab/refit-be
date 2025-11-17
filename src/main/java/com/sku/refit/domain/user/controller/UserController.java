@@ -38,7 +38,7 @@ public interface UserController {
               false -> 중복되지 않는 닉네임, 변경 가능.
               """)
   ResponseEntity<BaseResponse<Boolean>> checkNicknameDuplicated(
-      @Parameter(description = "확인할 닉네임", example = "경북지색") @RequestParam String nickname);
+      @Parameter(description = "확인할 닉네임", example = "리핏") @RequestParam String nickname);
 
   @GetMapping("/dev")
   @Operation(summary = "[개발용]사용자 전체 조회", description = "스웨거를 사용해 전체 사용자를 조회합니다.")
@@ -55,7 +55,7 @@ public interface UserController {
   @PutMapping("/nickname")
   @Operation(summary = "닉네임 변경", description = "현재 로그인한 사용자의 닉네임을 변경합니다.")
   ResponseEntity<BaseResponse<String>> updateNickname(
-      @Parameter(description = "변경할 닉네임", example = "경북지색") @RequestParam String newNickname);
+      @Parameter(description = "변경할 닉네임", example = "리핏") @RequestParam String newNickname);
 
   @PutMapping(value = "/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "프로필 사진 변경", description = "현재 로그인한 사용자의 프로필 사진을 변경합니다.")

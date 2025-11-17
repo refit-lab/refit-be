@@ -1,22 +1,10 @@
-FROM eclipse-temurin:21-jdk AS build
-
-WORKDIR /app
-
-COPY ../gradlew .
-COPY ../gradle gradle
-COPY ../build.gradle settings.gradle ./
-COPY ../src src
-
-RUN chmod +x gradlew
-
-RUN ./gradlew clean build -x test
-
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar app.jar
+# JAR는 외부에서 마운트하거나 CI에서 복사
+COPY app.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "exec java -jar app.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod}"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod}"]

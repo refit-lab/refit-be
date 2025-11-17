@@ -55,11 +55,11 @@ public class User {
   @Builder.Default
   private Role role = Role.ROLE_USER;
 
-  public static User fromOAuth(String profileImageUrl, String nickname, String email) {
+  public static User fromOAuth(String email, String nickname, String profileImageUrl) {
     return User.builder()
+        .username(email)
         .profileImageUrl(profileImageUrl)
         .nickname(nickname)
-        .username(email)
         .locationConsent(false)
         .role(Role.ROLE_USER)
         .build();

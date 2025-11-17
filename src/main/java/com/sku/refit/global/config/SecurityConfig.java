@@ -117,6 +117,7 @@ public class SecurityConfig {
             auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                 .permitAll()
                 .requestMatchers(
+                    "/**",
                     "/api/users/sign-up",
                     "/api/auths/login",
                     "/api/auths/test-login",

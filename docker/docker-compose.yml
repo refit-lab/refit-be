@@ -1,7 +1,7 @@
 services:
   app:
-    image: unijuni/repit:latest
-    container_name: repit-app-prod
+    image: unijuni/refit:latest
+    container_name: refit-app
     ports:
       - "8080:8080"
     environment:
@@ -13,7 +13,7 @@ services:
       mysql:
         condition: service_healthy
     networks:
-      - repit-network
+      - refit-network
     restart: unless-stopped
 
   mysql:
@@ -29,7 +29,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
-      - repit-network
+      - refit-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
@@ -47,7 +47,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - repit-network
+      - refit-network
     restart: unless-stopped
 
 networks:
