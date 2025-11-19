@@ -100,11 +100,9 @@ public class AuthServiceImpl implements AuthService {
     UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(testUsername, testPassword);
 
-    log.info("토큰: {}", authenticationToken);
     authenticationManager.authenticate(authenticationToken);
 
     try {
-      log.info("<UNK> <UNK>: {}", testUsername);
       TokenResponse tokenResponse = jwtProvider.createTokens(authenticationToken);
 
       log.info("테스트 로그인 성공: {}", testUsername);
