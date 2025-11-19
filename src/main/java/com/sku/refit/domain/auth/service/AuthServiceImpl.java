@@ -8,14 +8,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sku.refit.domain.auth.dto.request.LoginRequest;
 import com.sku.refit.domain.auth.dto.response.TokenResponse;
 import com.sku.refit.domain.auth.exception.AuthErrorCode;
-import com.sku.refit.domain.user.entity.Role;
 import com.sku.refit.domain.user.entity.User;
 import com.sku.refit.domain.user.exception.UserErrorCode;
 import com.sku.refit.domain.user.repository.UserRepository;
@@ -102,9 +100,11 @@ public class AuthServiceImpl implements AuthService {
     UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(testUsername, testPassword);
 
+    log.info("토큰: {}", authenticationToken);
     authenticationManager.authenticate(authenticationToken);
 
     try {
+      log.info("<UNK> <UNK>: {}", testUsername);
       TokenResponse tokenResponse = jwtProvider.createTokens(authenticationToken);
 
       log.info("테스트 로그인 성공: {}", testUsername);

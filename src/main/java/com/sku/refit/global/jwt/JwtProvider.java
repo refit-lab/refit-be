@@ -105,6 +105,8 @@ public class JwtProvider {
    * @return 토큰 응답 객체
    */
   public TokenResponse createTokens(Authentication authentication) {
+
+    log.info("<UNK> <UNK> <UNK> <UNK>: {}", authentication.getName());
     String username = authentication.getName();
 
     // Access Token 생성
