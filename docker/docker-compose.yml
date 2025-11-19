@@ -75,3 +75,4 @@ networks:
 
 volumes:
   mysql-data:
+  redis-data:
