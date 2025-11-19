@@ -99,22 +99,6 @@ public class AuthServiceImpl implements AuthService {
   @Transactional
   public TokenResponse testLogin() {
 
-    userRepository
-        .findByUsername(testUsername)
-        .orElseGet(
-            () -> {
-              User testUser =
-                  User.builder()
-                      .username(testUsername)
-                      .password(new BCryptPasswordEncoder().encode(testPassword))
-                      .role(Role.ROLE_USER)
-                      .locationConsent(true)
-                      .nickname("테스트유저")
-                      .profileImageUrl("default.png")
-                      .build();
-              return userRepository.save(testUser);
-            });
-
     UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(testUsername, testPassword);
 
