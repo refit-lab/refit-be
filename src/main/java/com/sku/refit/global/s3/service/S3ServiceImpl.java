@@ -192,7 +192,8 @@ public class S3ServiceImpl implements S3Service {
   private String getPrefix(PathName pathName) {
     return switch (pathName) {
       case PROFILE_IMAGE -> s3Config.getProfileImagePath();
-      case FOLDER -> s3Config.getFolder2Path();
+      case POST -> s3Config.getPostPath();
+      case CLOTH -> s3Config.getClothPath();
     };
   }
 }
