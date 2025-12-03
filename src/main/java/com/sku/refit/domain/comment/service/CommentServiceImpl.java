@@ -75,6 +75,10 @@ public class CommentServiceImpl implements CommentService {
             .findById(id)
             .orElseThrow(() -> new CustomException(CommentErrorCode.COMMENT_NOT_FOUND));
 
+    if (!comment.getUser().getId().equals(user.getId())) {
+      throw new CustomException(CommentErrorCode.COMMENT_NOT_FOUND);
+    }
+
     comment.update(request.getContent());
 
     return commentMapper.toDetailResponse(comment, user);
@@ -84,10 +88,15 @@ public class CommentServiceImpl implements CommentService {
   @Transactional
   public void deleteComment(Long id) {
 
+    User user = userService.getCurrentUser();
     Comment comment =
         commentRepository
             .findById(id)
             .orElseThrow(() -> new CustomException(CommentErrorCode.COMMENT_NOT_FOUND));
+
+    if (!comment.getUser().getId().equals(user.getId())) {
+      throw new CustomException(CommentErrorCode.COMMENT_NOT_FOUND);
+    }
 
     Post post = comment.getPost();
     post.getCommentList().remove(comment);

@@ -127,23 +127,32 @@ public class PostServiceImpl implements PostService {
             .findById(id)
             .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
 
+    if (!post.getUser().getId().equals(user.getId())) {
+      throw new CustomException(PostErrorCode.POST_UPDATE_FAILED);
+    }
+
     List<String> oldImageUrls = post.getImageUrlList();
     List<String> newImageUrls = new ArrayList<>();
 
     if (images != null && !images.isEmpty()) {
 
       try {
-        // 기존 이미지 삭제
         for (String imageUrl : oldImageUrls) {
           s3Service.deleteFile(s3Service.extractKeyNameFromUrl(imageUrl));
         }
 
-        // 새 이미지 업로드
         for (MultipartFile image : images) {
           newImageUrls.add(s3Service.uploadImage(PathName.POST, image).getImageUrl());
         }
 
+        for (String imageUrl : oldImageUrls) {
+          s3Service.deleteFile(s3Service.extractKeyNameFromUrl(imageUrl));
+        }
+
       } catch (Exception e) {
+        for (String url : newImageUrls) {
+          s3Service.deleteFile(s3Service.extractKeyNameFromUrl(url));
+        }
         throw new CustomException(PostErrorCode.IMAGE_UPLOAD_FAILED);
       }
 
@@ -160,10 +169,15 @@ public class PostServiceImpl implements PostService {
   @Transactional
   public void deletePost(Long id) {
 
+    User user = userService.getCurrentUser();
     Post post =
         postRepository
             .findById(id)
             .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
+
+    if (!post.getUser().getId().equals(user.getId())) {
+      throw new CustomException(PostErrorCode.POST_DELETE_FAILED);
+    }
 
     for (String imageUrl : post.getImageUrlList()) {
       s3Service.deleteFile(s3Service.extractKeyNameFromUrl(imageUrl));

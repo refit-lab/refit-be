@@ -64,7 +64,7 @@ public class Post extends BaseTimeEntity {
 
   @OneToMany(
       mappedBy = "post",
-      fetch = FetchType.EAGER,
+      fetch = FetchType.LAZY,
       cascade = CascadeType.ALL,
       orphanRemoval = true)
   @Builder.Default

@@ -33,6 +33,9 @@ public class PostDetailResponse {
   @Schema(description = "게시글 작성자", example = "김다입")
   private String nickname;
 
+  @Schema(description = "이미지 URL 리스트")
+  private List<String> imageUrlList;
+
   @Schema(description = "댓글 식별자 리스트", example = "[1, 2, 3]")
   private List<Long> commentIdList;
 }

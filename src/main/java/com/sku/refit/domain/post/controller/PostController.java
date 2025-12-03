@@ -85,6 +85,6 @@ public interface PostController {
 
   @DeleteMapping("/{id}")
   @Operation(summary = "게시글 삭제", description = "특정 게시글을 삭제합니다.")
-  ResponseEntity<BaseResponse<Void>> deleteExhibitionLike(
+  ResponseEntity<BaseResponse<Void>> deletePost(
       @Parameter(description = "게시글 식별자", example = "1") @PathVariable Long id);
 }

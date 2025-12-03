@@ -44,10 +44,10 @@ public class PostControllerImpl implements PostController {
 
   @Override
   public ResponseEntity<BaseResponse<InfiniteResponse<PostDetailResponse>>> getPostByCategory(
-      String category, Long lastBookId, Integer size) {
+      String category, Long lastPostId, Integer size) {
 
     InfiniteResponse<PostDetailResponse> response =
-        postService.getPostsByCategory(category, lastBookId, size);
+        postService.getPostsByCategory(category, lastPostId, size);
     return ResponseEntity.ok(BaseResponse.success(response));
   }
 
@@ -67,7 +67,7 @@ public class PostControllerImpl implements PostController {
   }
 
   @Override
-  public ResponseEntity<BaseResponse<Void>> deleteExhibitionLike(Long id) {
+  public ResponseEntity<BaseResponse<Void>> deletePost(Long id) {
 
     postService.deletePost(id);
     return ResponseEntity.ok(BaseResponse.success(null));
