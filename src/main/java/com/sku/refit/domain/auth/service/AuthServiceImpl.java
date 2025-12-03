@@ -8,12 +8,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sku.refit.domain.auth.dto.request.LoginRequest;
 import com.sku.refit.domain.auth.dto.response.TokenResponse;
 import com.sku.refit.domain.auth.exception.AuthErrorCode;
+import com.sku.refit.domain.user.entity.Role;
 import com.sku.refit.domain.user.entity.User;
 import com.sku.refit.domain.user.exception.UserErrorCode;
 import com.sku.refit.domain.user.repository.UserRepository;
@@ -37,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
   private final AuthenticationManager authenticationManager;
   private final JwtProvider jwtProvider;
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   @Transactional
@@ -96,6 +99,23 @@ public class AuthServiceImpl implements AuthService {
   @Override
   @Transactional
   public TokenResponse testLogin() {
+
+    User user = userRepository.findByUsername(testUsername).orElse(null);
+
+    if (user == null) {
+      user =
+          User.builder()
+              .profileImageUrl(testUsername + ".png")
+              .nickname("김다입")
+              .username(testUsername)
+              .password(passwordEncoder.encode(testPassword))
+              .locationConsent(true)
+              .role(Role.ROLE_USER)
+              .build();
+
+      userRepository.save(user);
+      log.info("테스트 사용자 생성됨: {}", user.getUsername());
+    }
 
     UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(testUsername, testPassword);
