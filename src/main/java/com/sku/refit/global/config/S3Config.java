@@ -39,8 +39,11 @@ public class S3Config {
   @Value("${cloud.aws.s3.path.profile-image}")
   private String profileImagePath;
 
-  @Value("${cloud.aws.s3.path.folder2}")
-  private String folder2Path;
+  @Value("${cloud.aws.s3.path.post}")
+  private String postPath;
+
+  @Value("${cloud.aws.s3.path.cloth}")
+  private String clothPath;
 
   @PostConstruct
   public void init() {
