@@ -45,15 +45,15 @@ public interface PostController {
       @Parameter(
               description = "게시글 이미지 리스트",
               content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-          @RequestPart(value = "images", required = false)
-          List<MultipartFile> images);
+          @RequestPart(value = "imageList", required = false)
+          List<MultipartFile> imageList);
 
   @GetMapping("/admin")
   @Operation(summary = "[관리자] 게시글 전체 조회", description = "전체 게시글 리스트를 조회합니다.")
   ResponseEntity<BaseResponse<List<PostDetailResponse>>> getAllPosts();
 
   @GetMapping
-  @Operation(summary = "카테코리별 게시글 전체 조회", description = "특정 카테고리의 게시글 리스트를 조회합니다.")
+  @Operation(summary = "카테고리별 게시글 전체 조회", description = "특정 카테고리의 게시글 리스트를 조회합니다.")
   ResponseEntity<BaseResponse<InfiniteResponse<PostDetailResponse>>> getPostByCategory(
       @RequestParam String category,
       @Parameter(description = "마지막으로 조회한 게시글 식별자(첫 조회 시 생략)", example = "3")
@@ -74,8 +74,8 @@ public interface PostController {
       @Parameter(
               description = "수정할 이미지 리스트",
               content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-          @RequestPart(value = "image", required = false)
-          List<MultipartFile> image,
+          @RequestPart(value = "imageList", required = false)
+          List<MultipartFile> imageList,
       @Parameter(
               description = "게시글 수정 내용",
               content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))

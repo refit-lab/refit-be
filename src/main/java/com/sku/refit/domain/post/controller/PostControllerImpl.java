@@ -29,9 +29,9 @@ public class PostControllerImpl implements PostController {
 
   @Override
   public ResponseEntity<BaseResponse<PostDetailResponse>> createPost(
-      @Valid PostRequest request, List<MultipartFile> images) {
+      @Valid PostRequest request, List<MultipartFile> imageList) {
 
-    PostDetailResponse response = postService.createPost(request, images);
+    PostDetailResponse response = postService.createPost(request, imageList);
     return ResponseEntity.ok(BaseResponse.success(response));
   }
 
@@ -60,9 +60,9 @@ public class PostControllerImpl implements PostController {
 
   @Override
   public ResponseEntity<BaseResponse<PostDetailResponse>> updatePostById(
-      Long id, List<MultipartFile> image, @Valid PostRequest request) {
+      Long id, List<MultipartFile> imageList, @Valid PostRequest request) {
 
-    PostDetailResponse response = postService.updatePost(id, request, image);
+    PostDetailResponse response = postService.updatePost(id, request, imageList);
     return ResponseEntity.ok(BaseResponse.success(response));
   }
 
