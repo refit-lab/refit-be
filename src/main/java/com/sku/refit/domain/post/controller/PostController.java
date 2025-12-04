@@ -58,7 +58,7 @@ public interface PostController {
       @RequestParam String category,
       @Parameter(description = "마지막으로 조회한 게시글 식별자(첫 조회 시 생략)", example = "3")
           @RequestParam(required = false)
-          Long lastBookId,
+          Long lastPostId,
       @Parameter(description = "한 번에 조회할 게시글 개수", example = "3") @RequestParam(defaultValue = "3")
           Integer size);
 
