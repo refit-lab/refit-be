@@ -17,7 +17,7 @@ import com.sku.refit.global.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "티켓", description = "티켓 발급/검증/체크인 및 사용자 조회")
+@Tag(name = "티켓", description = "티켓 관련 API")
 @RequestMapping("/api/tickets")
 public interface TicketController {
 
@@ -32,7 +32,7 @@ public interface TicketController {
       @RequestBody @Valid VerifyTicketRequest request);
 
   @PostMapping("/admin/consume")
-  @Operation(summary = "[관리자] 티켓 사용 처리", description = "token으로 티켓을 사용 처리합니다. (멱등)")
+  @Operation(summary = "[관리자] 티켓 사용 처리", description = "token으로 티켓을 사용 처리합니다. (멱등 사용 처리)")
   ResponseEntity<BaseResponse<ConsumeTicketResponse>> consumeTicket(
       @RequestBody @Valid ConsumeTicketRequest request);
 
