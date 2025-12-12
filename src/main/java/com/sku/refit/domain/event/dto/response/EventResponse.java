@@ -22,6 +22,9 @@ public class EventResponse {
 
     /* ===== 상단 ===== */
 
+    @Schema(description = "행사 식별자", example = "1")
+    private Long eventId;
+
     @Schema(description = "누적 예약 인원(옷 수량 기준)", example = "25")
     private Integer totalReservedCount;
 

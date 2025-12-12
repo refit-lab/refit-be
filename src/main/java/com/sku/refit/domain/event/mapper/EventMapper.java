@@ -35,6 +35,7 @@ public class EventMapper {
       Event event, Boolean isReserved, List<String> recent4, int clothCountExcept4) {
     return EventDetailResponse.builder()
         .isReserved(isReserved)
+        .eventId(event.getId())
         .totalReservedCount(event.getTotalReservedCount())
         .thumbnailUrl(event.getThumbnailUrl())
         .name(event.getName())
