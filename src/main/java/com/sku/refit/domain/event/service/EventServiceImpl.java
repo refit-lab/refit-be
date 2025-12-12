@@ -81,13 +81,10 @@ public class EventServiceImpl implements EventService {
 
   @Override
   @Transactional
-  public EventDetailResponse updateEvent(
-      Long id, EventInfoRequest request, MultipartFile thumbnail) {
+  public EventDetailResponse updateEvent(Long id, EventInfoRequest request, MultipartFile thumbnail) {
 
-    Event event =
-        eventRepository
-            .findById(id)
-            .orElseThrow(() -> new CustomException(EventErrorCode.EVENT_NOT_FOUND));
+    Event event = eventRepository.findById(id)
+        .orElseThrow(() -> new CustomException(EventErrorCode.EVENT_NOT_FOUND));
 
     try {
       event.update(
@@ -95,30 +92,13 @@ public class EventServiceImpl implements EventService {
           request.getDescription(),
           request.getDate(),
           request.getLocation(),
-          request.getDetailLink());
-      if (thumbnail != null && !thumbnail.isEmpty()) {
-        String oldThumbUrl = event.getThumbnailUrl();
-        if (oldThumbUrl != null) {
-          try {
-            s3Service.deleteFile(s3Service.extractKeyNameFromUrl(oldThumbUrl));
-          } catch (CustomException e) {
-            throw e;
-          } catch (Exception e) {
-            log.error("[EVENT] updateEvent - thumbnail delete failed, eventId={}", id, e);
-            throw new CustomException(EventErrorCode.EVENT_THUMBNAIL_DELETE_FAILED);
-          }
-        }
+          request.getDetailLink()
+      );
 
-        try {
-          String newThumbUrl = s3Service.uploadFileAsWebp(PathName.EVENT, thumbnail);
-          event.updateThumbnailUrl(newThumbUrl);
-        } catch (CustomException e) {
-          throw e;
-        } catch (Exception e) {
-          log.error("[EVENT] updateEvent - thumbnail upload failed, eventId={}", id, e);
-          throw new CustomException(EventErrorCode.EVENT_THUMBNAIL_UPLOAD_FAILED);
-        }
+      if (thumbnail != null && !thumbnail.isEmpty()) {
+        replaceThumbnail(event, id, thumbnail);
       }
+
       return getEventDetail(event.getId());
 
     } catch (CustomException e) {
@@ -126,6 +106,29 @@ public class EventServiceImpl implements EventService {
     } catch (Exception e) {
       log.error("[EVENT] updateEvent - failed, eventId={}", id, e);
       throw new CustomException(EventErrorCode.EVENT_UPDATE_FAILED);
+    }
+  }
+
+  private void replaceThumbnail(Event event, Long eventId, MultipartFile thumbnail) {
+    String oldThumbUrl = event.getThumbnailUrl();
+
+    final String newThumbUrl;
+    try {
+      newThumbUrl = s3Service.uploadFileAsWebp(PathName.EVENT, thumbnail);
+    } catch (Exception e) {
+      log.error("[EVENT] updateEvent - thumbnail upload failed, eventId={}", eventId, e);
+      throw new CustomException(EventErrorCode.EVENT_THUMBNAIL_UPLOAD_FAILED);
+    }
+
+    event.updateThumbnailUrl(newThumbUrl);
+
+    if (oldThumbUrl != null) {
+      try {
+        s3Service.deleteFile(s3Service.extractKeyNameFromUrl(oldThumbUrl));
+      } catch (Exception e) {
+        log.error("[EVENT] updateEvent - thumbnail delete failed, eventId={}", eventId, e);
+        throw new CustomException(EventErrorCode.EVENT_THUMBNAIL_DELETE_FAILED);
+      }
     }
   }
 
