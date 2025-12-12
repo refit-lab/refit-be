@@ -3,8 +3,6 @@
  */
 package com.sku.refit.global.s3.service;
 
-import com.sksamuel.scrimage.ImmutableImage;
-import com.sksamuel.scrimage.webp.WebpWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,6 +19,8 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.sksamuel.scrimage.ImmutableImage;
+import com.sksamuel.scrimage.webp.WebpWriter;
 import com.sku.refit.global.config.S3Config;
 import com.sku.refit.global.exception.CustomException;
 import com.sku.refit.global.s3.dto.S3Response;
@@ -220,16 +220,14 @@ public class S3ServiceImpl implements S3Service {
 
     try (ByteArrayInputStream inputStream = new ByteArrayInputStream(webpBytes)) {
       amazonS3.putObject(
-          new PutObjectRequest(s3Config.getBucket(), keyName, inputStream, metadata)
-      );
+          new PutObjectRequest(s3Config.getBucket(), keyName, inputStream, metadata));
 
       log.info("파일(WebP) 업로드 성공 - bucket: {}, keyName: {}", s3Config.getBucket(), keyName);
 
       return amazonS3.getUrl(s3Config.getBucket(), keyName).toString();
 
     } catch (Exception e) {
-      log.error(
-          "S3 WebP 업로드 중 오류 발생 - bucket: {}, keyName: {}", s3Config.getBucket(), keyName, e);
+      log.error("S3 WebP 업로드 중 오류 발생 - bucket: {}, keyName: {}", s3Config.getBucket(), keyName, e);
       throw new CustomException(S3ErrorStatus.FILE_SERVER_ERROR);
     }
   }
@@ -261,7 +259,8 @@ public class S3ServiceImpl implements S3Service {
       } catch (IOException e) {
         log.error(
             "WebP 변환 중 IO 오류 - originalFilename: {}, message: {}",
-            file.getOriginalFilename(), e.getMessage());
+            file.getOriginalFilename(),
+            e.getMessage());
         throw new CustomException(S3ErrorStatus.FILE_SERVER_ERROR);
       }
 
@@ -273,7 +272,8 @@ public class S3ServiceImpl implements S3Service {
     } catch (Exception e) {
       log.error(
           "WebP 변환 중 예기치 않은 오류 - originalFilename: {}, message: {}",
-          file.getOriginalFilename(), e.getMessage());
+          file.getOriginalFilename(),
+          e.getMessage());
       throw new CustomException(S3ErrorStatus.FILE_SERVER_ERROR);
     }
   }
