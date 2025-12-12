@@ -3,7 +3,11 @@
  */
 package com.sku.refit.domain.comment.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sku.refit.domain.comment.dto.request.CommentRequest;
 import com.sku.refit.domain.comment.dto.response.CommentDetailResponse;
 import com.sku.refit.domain.comment.entity.Comment;
+import com.sku.refit.domain.comment.entity.CommentLike;
 import com.sku.refit.domain.comment.exception.CommentErrorCode;
 import com.sku.refit.domain.comment.mapper.CommentMapper;
+import com.sku.refit.domain.comment.repository.CommentLikeRepository;
 import com.sku.refit.domain.comment.repository.CommentRepository;
 import com.sku.refit.domain.post.entity.Post;
 import com.sku.refit.domain.post.exception.PostErrorCode;
@@ -31,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommentServiceImpl implements CommentService {
 
   private final CommentRepository commentRepository;
+  private final CommentLikeRepository commentLikeRepository;
   private final PostRepository postRepository;
   private final CommentMapper commentMapper;
   private final UserService userService;
@@ -46,10 +53,51 @@ public class CommentServiceImpl implements CommentService {
             .findById(postId)
             .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
 
-    Comment comment = commentMapper.toComment(request, user, post);
+    Comment parent = null;
+    if (request.getParentCommentId() != null) {
+      parent =
+          commentRepository
+              .findById(request.getParentCommentId())
+              .orElseThrow(() -> new CustomException(CommentErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    Comment comment = commentMapper.toComment(request, parent, user, post);
 
     commentRepository.save(comment);
-    return commentMapper.toDetailResponse(comment, user);
+
+    return commentMapper.toDetailResponse(comment, user, 0L, false, new ArrayList<>());
+  }
+
+  @Override
+  @Transactional
+  public void toggleLike(Long commentId) {
+
+    User user = userService.getCurrentUser();
+
+    Comment comment =
+        commentRepository
+            .findById(commentId)
+            .orElseThrow(() -> new CustomException(CommentErrorCode.COMMENT_NOT_FOUND));
+
+    commentLikeRepository
+        .findByCommentAndUser(comment, user)
+        .ifPresentOrElse(
+            like -> {
+              commentLikeRepository.delete(like);
+              log.info(
+                  "[COMMENT LIKE] UNLIKE - commentId={}, userId={}", comment.getId(), user.getId());
+            },
+            () -> {
+              CommentLike saved =
+                  commentLikeRepository.save(
+                      CommentLike.builder().comment(comment).user(user).build());
+
+              log.info(
+                  "[COMMENT LIKE] LIKE - commentId={}, userId={}, likeId={}",
+                  comment.getId(),
+                  user.getId(),
+                  saved.getId());
+            });
   }
 
   @Override
@@ -62,7 +110,49 @@ public class CommentServiceImpl implements CommentService {
 
     List<Comment> comments = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId);
 
-    return comments.stream().map(comment -> commentMapper.toDetailResponse(comment, user)).toList();
+    if (comments.isEmpty()) {
+      return List.of();
+    }
+
+    List<Long> commentIds = comments.stream().map(Comment::getId).toList();
+
+    List<Object[]> likeCounts = commentLikeRepository.countByCommentIds(commentIds);
+
+    Map<Long, Long> likeCountMap = new HashMap<>();
+    for (Object[] row : likeCounts) {
+      Long commentId = (Long) row[0];
+      Long count = (Long) row[1];
+      likeCountMap.put(commentId, count);
+    }
+
+    Set<Long> likedCommentIds = commentLikeRepository.findLikedCommentIds(commentIds, user.getId());
+
+    Map<Long, CommentDetailResponse> responseMap = new HashMap<>();
+
+    for (Comment comment : comments) {
+      responseMap.put(
+          comment.getId(),
+          commentMapper.toDetailResponse(
+              comment,
+              user,
+              likeCountMap.getOrDefault(comment.getId(), 0L),
+              likedCommentIds.contains(comment.getId()),
+              new ArrayList<>()));
+    }
+
+    List<CommentDetailResponse> result = new ArrayList<>();
+
+    for (Comment comment : comments) {
+      CommentDetailResponse response = responseMap.get(comment.getId());
+
+      if (comment.getParent() == null) {
+        result.add(response);
+      } else {
+        responseMap.get(comment.getParent().getId()).getReplies().add(response);
+      }
+    }
+
+    return result;
   }
 
   @Override
@@ -81,7 +171,10 @@ public class CommentServiceImpl implements CommentService {
 
     comment.update(request.getContent());
 
-    return commentMapper.toDetailResponse(comment, user);
+    long likeCount = commentLikeRepository.countByComment(comment);
+    boolean isLiked = commentLikeRepository.existsByCommentAndUser(comment, user);
+
+    return commentMapper.toDetailResponse(comment, user, likeCount, isLiked, new ArrayList<>());
   }
 
   @Override

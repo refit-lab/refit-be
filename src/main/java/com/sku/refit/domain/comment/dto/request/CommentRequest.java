@@ -21,4 +21,7 @@ public class CommentRequest {
   @NotBlank(message = "댓글 내용은 필수입니다.")
   @Schema(description = "댓글 내용", example = "답변 감사합니다~~~")
   private String content;
+
+  @Schema(description = "답글을 작성할 댓글의 식별자", example = "1")
+  private Long parentCommentId;
 }

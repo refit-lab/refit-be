@@ -114,6 +114,8 @@ public class PostServiceImpl implements PostService {
             .findById(id)
             .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
 
+    post.increaseViews();
+
     return postMapper.toDetailResponse(post, user);
   }
 

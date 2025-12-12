@@ -20,6 +20,13 @@ public interface CommentService {
   CommentDetailResponse createComment(CommentRequest request, Long postId);
 
   /**
+   * 댓글 좋아요 등록
+   *
+   * @param commentId
+   */
+  void toggleLike(Long commentId);
+
+  /**
    * 특정 게시글의 댓글 전체 조회
    *
    * @param postId 게시글 ID
