@@ -255,7 +255,7 @@ public class EventServiceImpl implements EventService {
 
     List<String> recent4 =
         eventReservationImageRepository
-            .findTop4ByReservation_Event_IdOrderByIdDesc(id, PageRequest.of(0, 4))
+            .findTop4ByReservation_Event_IdOrderByIdDesc(id)
             .stream()
             .map(EventReservationImage::getImageUrl)
             .toList();

@@ -14,7 +14,7 @@ public interface EventReservationImageRepository
     extends JpaRepository<EventReservationImage, Long> {
 
   List<EventReservationImage> findTop4ByReservation_Event_IdOrderByIdDesc(
-      Long eventId, Pageable pageable);
+      Long eventId);
 
   int countByReservation_Event_Id(Long eventId);
 
