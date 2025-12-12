@@ -68,7 +68,7 @@ public interface EventController {
   ResponseEntity<BaseResponse<List<EventSimpleResponse>>> getEndedEvents();
 
   @GetMapping
-  @Operation(summary = "행사 3분류 조회", description = "다가오는/예정/종료 3분류로 반환합니다.")
+  @Operation(summary = "다가오는/예정된/종료된 행사 조회", description = "다가오는/예정된/종료된 3분류로 행사를 하나씩 반환합니다.")
   ResponseEntity<BaseResponse<EventGroupResponse>> getEventGroups();
 
   /* =========================
@@ -82,9 +82,7 @@ public interface EventController {
   ResponseEntity<BaseResponse<EventDetailResponse>> getEventDetail(@PathVariable Long id);
 
   @GetMapping("/{id}/img")
-  @Operation(
-      summary = "행사 더보기 이미지 조회",
-      description = "해당 행사의 예약에서 업로드된 모든 옷 사진을 최신 등록순으로 반환합니다(페이징 없음).")
+  @Operation(summary = "행사 더보기 이미지 조회", description = "해당 행사의 예약에서 업로드된 모든 옷 사진을 최신 등록순으로 반환합니다.")
   ResponseEntity<BaseResponse<List<EventImageResponse>>> getEventAllReservationImages(
       @PathVariable Long id);
 

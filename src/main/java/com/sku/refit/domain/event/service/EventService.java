@@ -7,9 +7,8 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sku.refit.domain.event.dto.request.EventRequest.EventInfoRequest;
-import com.sku.refit.domain.event.dto.request.EventRequest.EventRsvRequest;
-import com.sku.refit.domain.event.dto.response.EventResponse;
+import com.sku.refit.domain.event.dto.request.EventRequest.*;
+import com.sku.refit.domain.event.dto.response.EventResponse.*;
 
 /**
  * 행사(Event) 관련 주요 기능을 제공하는 서비스 인터페이스입니다.
@@ -39,7 +38,7 @@ public interface EventService {
    * @param thumbnail 행사 대표 이미지
    * @return 생성된 행사 상세 응답
    */
-  EventResponse.EventDetailResponse createEvent(EventInfoRequest request, MultipartFile thumbnail);
+  EventDetailResponse createEvent(EventInfoRequest request, MultipartFile thumbnail);
 
   /**
    * 기존 행사를 수정합니다. (관리자 전용)
@@ -51,8 +50,7 @@ public interface EventService {
    * @param thumbnail 새 대표 이미지 (선택)
    * @return 수정된 행사 상세 응답
    */
-  EventResponse.EventDetailResponse updateEvent(
-      Long id, EventInfoRequest request, MultipartFile thumbnail);
+  EventDetailResponse updateEvent(Long id, EventInfoRequest request, MultipartFile thumbnail);
 
   /**
    * 행사를 삭제합니다. (관리자 전용)
@@ -74,7 +72,7 @@ public interface EventService {
    *
    * @return 예정된 행사 카드 응답 리스트
    */
-  List<EventResponse.EventCardResponse> getUpcomingEvents();
+  List<EventCardResponse> getUpcomingEvents();
 
   /**
    * 종료된 행사 목록을 조회합니다.
@@ -83,7 +81,7 @@ public interface EventService {
    *
    * @return 종료된 행사 간단 응답 리스트
    */
-  List<EventResponse.EventSimpleResponse> getEndedEvents();
+  List<EventSimpleResponse> getEndedEvents();
 
   /**
    * 행사 목록을 그룹 형태로 조회합니다.
@@ -98,7 +96,7 @@ public interface EventService {
    *
    * @return 행사 그룹 응답
    */
-  EventResponse.EventGroupResponse getEventGroups();
+  EventGroupResponse getEventGroups();
 
   /* =========================
    * Detail
@@ -122,7 +120,7 @@ public interface EventService {
    * @param id 조회할 행사 ID
    * @return 행사 상세 응답
    */
-  EventResponse.EventDetailResponse getEventDetail(Long id);
+  EventDetailResponse getEventDetail(Long id);
 
   /**
    * 특정 행사에 등록된 모든 예약 이미지를 조회합니다.
@@ -132,7 +130,7 @@ public interface EventService {
    * @param eventId 행사 ID
    * @return 행사 예약 이미지 응답 리스트
    */
-  List<EventResponse.EventImageResponse> getEventAllReservationImages(Long eventId);
+  List<EventImageResponse> getEventAllReservationImages(Long eventId);
 
   /* =========================
    * Reservation
@@ -157,6 +155,6 @@ public interface EventService {
    * @param clothImageList 예약 시 업로드하는 의류 이미지 목록
    * @return 행사 예약 결과 응답
    */
-  EventResponse.EventReservationResponse reserveEvent(
+  EventReservationResponse reserveEvent(
       Long eventId, EventRsvRequest request, List<MultipartFile> clothImageList);
 }

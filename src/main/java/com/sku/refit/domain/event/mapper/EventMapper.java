@@ -9,10 +9,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.sku.refit.domain.event.dto.request.EventRequest.EventInfoRequest;
+import com.sku.refit.domain.event.dto.request.EventRequest.*;
 import com.sku.refit.domain.event.dto.response.EventResponse.*;
 import com.sku.refit.domain.event.entity.Event;
+import com.sku.refit.domain.event.entity.EventReservation;
 import com.sku.refit.domain.event.entity.EventReservationImage;
+import com.sku.refit.domain.user.entity.User;
 
 @Component
 public class EventMapper {
@@ -98,6 +100,17 @@ public class EventMapper {
   /* =========================
    * Reservation Response
    * ========================= */
+  public EventReservation toReservation(Event event, User user, EventRsvRequest request) {
+    return EventReservation.builder()
+        .event(event)
+        .user(user)
+        .name(request.getName())
+        .phone(request.getPhone())
+        .email(request.getEmail())
+        .clothCount(request.getClothCount() == null ? 0 : request.getClothCount())
+        .marketingConsent(request.getMarketingConsent())
+        .build();
+  }
 
   public EventReservationResponse toReservationResponse(Event event) {
     return EventReservationResponse.builder()

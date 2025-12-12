@@ -291,45 +291,28 @@ public class EventServiceImpl implements EventService {
       throw new CustomException(EventErrorCode.EVENT_ALREADY_RESERVED);
     }
 
-    try {
-      EventReservation reservation =
-          EventReservation.builder()
-              .event(event)
-              .user(user)
-              .name(request.getName())
-              .phone(request.getPhone())
-              .email(request.getEmail())
-              .clothCount(request.getClothCount() == null ? 0 : request.getClothCount())
-              .marketingConsent(request.getMarketingConsent())
-              .build();
+    EventReservation reservation = eventMapper.toReservation(event, user, request);
 
-      eventReservationRepository.save(reservation);
+    eventReservationRepository.save(reservation);
 
-      if (clothImageList != null && !clothImageList.isEmpty()) {
-        for (MultipartFile f : clothImageList) {
-          try {
-            String url = s3Service.uploadFileAsWebp(PathName.EVENT, f);
+    if (clothImageList != null && !clothImageList.isEmpty()) {
+      for (MultipartFile f : clothImageList) {
+        try {
+          String url = s3Service.uploadFileAsWebp(PathName.EVENT, f);
 
-            eventReservationImageRepository.save(
-                EventReservationImage.builder().reservation(reservation).imageUrl(url).build());
-          } catch (CustomException e) {
-            throw e;
-          } catch (Exception e) {
-            log.error("[EVENT] reserveEvent - image upload failed, eventId={}", eventId, e);
-            throw new CustomException(EventErrorCode.EVENT_RESERVATION_IMAGE_UPLOAD_FAILED);
-          }
+          eventReservationImageRepository.save(
+              EventReservationImage.builder().reservation(reservation).imageUrl(url).build());
+        } catch (CustomException e) {
+          throw e;
+        } catch (Exception e) {
+          log.error("[EVENT] reserveEvent - image upload failed, eventId={}", eventId, e);
+          throw new CustomException(EventErrorCode.EVENT_RESERVATION_IMAGE_UPLOAD_FAILED);
         }
       }
-
-      event.increaseReservedCount(reservation.getClothCount());
-
-      return eventMapper.toReservationResponse(event);
-
-    } catch (CustomException e) {
-      throw e;
-    } catch (Exception e) {
-      log.error("[EVENT] reserveEvent - failed, eventId={}", eventId, e);
-      throw new CustomException(EventErrorCode.EVENT_RESERVATION_CREATE_FAILED);
     }
+
+    event.increaseReservedCount(reservation.getClothCount());
+
+    return eventMapper.toReservationResponse(event);
   }
 }
