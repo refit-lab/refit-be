@@ -139,13 +139,13 @@ public class EventResponse {
   @Schema(title = "EventGroupResponse DTO", description = "행사 분류별 리스트 응답")
   public static class EventGroupResponse {
 
-    @Schema(description = "다가오는 행사 리스트")
-    private List<EventCardResponse> upcoming;
+    @Schema(description = "다가오는 행사")
+    private EventCardResponse upcoming;
 
-    @Schema(description = "예정된 행사 리스트")
-    private List<EventSimpleResponse> scheduled;
+    @Schema(description = "예정된 행사")
+    private EventSimpleResponse scheduled;
 
-    @Schema(description = "종료된 행사 리스트")
-    private List<EventSimpleResponse> ended;
+    @Schema(description = "종료된 행사")
+    private EventSimpleResponse ended;
   }
 }

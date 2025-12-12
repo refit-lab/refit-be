@@ -87,10 +87,8 @@ public class EventMapper {
     return events.stream().map(this::toSimple).toList();
   }
 
-  public EventGroupResponse toGroupResponse(
-      List<EventCardResponse> upcoming,
-      List<EventSimpleResponse> scheduled,
-      List<EventSimpleResponse> ended) {
+  public EventGroupResponse toGroupResponseSingle(
+      EventCardResponse upcoming, EventSimpleResponse scheduled, EventSimpleResponse ended) {
     return EventGroupResponse.builder()
         .upcoming(upcoming)
         .scheduled(scheduled)

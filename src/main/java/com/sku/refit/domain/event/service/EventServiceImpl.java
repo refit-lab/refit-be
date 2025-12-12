@@ -150,7 +150,7 @@ public class EventServiceImpl implements EventService {
         }
       }
       List<EventReservationImage> images =
-          eventReservationImageRepository.findAllByEventIdOrderByIdDesc(id);
+          eventReservationImageRepository.findAllByReservation_Event_IdOrderByIdDesc(id);
 
       for (EventReservationImage img : images) {
         try {
@@ -206,17 +206,28 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public EventGroupResponse getEventGroups() {
-
     LocalDate today = LocalDate.now();
 
-    List<Event> upcoming = eventRepository.findByDateGreaterThanEqualOrderByDateAsc(today);
-    List<Event> ended = eventRepository.findByDateLessThanOrderByDateDesc(today);
+    List<Event> top2Upcoming =
+        eventRepository.findByDateGreaterThanEqualOrderByDateAsc(today, PageRequest.of(0, 2));
 
-    List<EventCardResponse> upcomingCards = eventMapper.toUpcomingCardList(upcoming, today);
-    List<EventSimpleResponse> scheduled = eventMapper.toSimpleList(upcoming);
-    List<EventSimpleResponse> endedSimple = eventMapper.toSimpleList(ended);
+    Event upcomingEvent = top2Upcoming.size() >= 1 ? top2Upcoming.get(0) : null;
+    Event scheduledEvent = top2Upcoming.size() >= 2 ? top2Upcoming.get(1) : null;
 
-    return eventMapper.toGroupResponse(upcomingCards, scheduled, endedSimple);
+    Event endedEvent =
+        eventRepository.findByDateLessThanOrderByDateDesc(today, PageRequest.of(0, 1)).stream()
+            .findFirst()
+            .orElse(null);
+
+    EventCardResponse upcoming =
+        (upcomingEvent == null) ? null : eventMapper.toUpcomingCard(upcomingEvent, today);
+
+    EventSimpleResponse scheduled =
+        (scheduledEvent == null) ? null : eventMapper.toSimple(scheduledEvent);
+
+    EventSimpleResponse ended = (endedEvent == null) ? null : eventMapper.toSimple(endedEvent);
+
+    return eventMapper.toGroupResponseSingle(upcoming, scheduled, ended);
   }
 
   /* =========================
@@ -244,17 +255,14 @@ public class EventServiceImpl implements EventService {
 
     List<String> recent4 =
         eventReservationImageRepository
-            .findTop4ByEventIdOrderByIdDesc(id, PageRequest.of(0, 4))
+            .findTop4ByReservation_Event_IdOrderByIdDesc(id, PageRequest.of(0, 4))
             .stream()
             .map(EventReservationImage::getImageUrl)
             .toList();
 
-    int totalClothCount =
-        eventReservationRepository.findByEventId(id).stream()
-            .mapToInt(r -> r.getClothCount() == null ? 0 : r.getClothCount())
-            .sum();
+    int totalUploadedClothCount = eventReservationImageRepository.countByReservation_Event_Id(id);
 
-    int clothCountExcept4 = Math.max(0, totalClothCount - recent4.size());
+    int clothCountExcept4 = Math.max(0, totalUploadedClothCount - 4);
 
     return eventMapper.toDetail(event, isReserved, recent4, clothCountExcept4);
   }
@@ -266,7 +274,9 @@ public class EventServiceImpl implements EventService {
         .findById(eventId)
         .orElseThrow(() -> new CustomException(EventErrorCode.EVENT_NOT_FOUND));
 
-    return eventReservationImageRepository.findAllByEventIdOrderByIdDesc(eventId).stream()
+    return eventReservationImageRepository
+        .findAllByReservation_Event_IdOrderByIdDesc(eventId)
+        .stream()
         .map(eventMapper::toImageResponse)
         .toList();
   }
@@ -311,7 +321,7 @@ public class EventServiceImpl implements EventService {
       }
     }
 
-    event.increaseReservedCount(reservation.getClothCount());
+    event.increaseReservedCount();
 
     return eventMapper.toReservationResponse(event);
   }

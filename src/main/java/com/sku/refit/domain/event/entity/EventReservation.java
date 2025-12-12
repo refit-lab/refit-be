@@ -15,7 +15,13 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "event_reservation")
+@Table(
+    name = "event_reservation",
+    uniqueConstraints = {
+      @UniqueConstraint(
+          name = "uk_event_user",
+          columnNames = {"event_id", "user_id"})
+    })
 public class EventReservation extends BaseTimeEntity {
 
   @Id
@@ -27,7 +33,7 @@ public class EventReservation extends BaseTimeEntity {
   private Event event;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false, unique = true)
+  @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
   @Column(nullable = false)

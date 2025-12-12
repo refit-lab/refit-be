@@ -61,8 +61,7 @@ public class Event extends BaseTimeEntity {
     this.thumbnailUrl = thumbnailUrl;
   }
 
-  public void increaseReservedCount(int delta) {
-    this.totalReservedCount =
-        (this.totalReservedCount == null ? 0 : this.totalReservedCount) + delta;
+  public void increaseReservedCount() {
+    this.totalReservedCount = (this.totalReservedCount == null ? 0 : this.totalReservedCount) + 1;
   }
 }

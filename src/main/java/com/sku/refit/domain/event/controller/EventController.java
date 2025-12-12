@@ -68,7 +68,9 @@ public interface EventController {
   ResponseEntity<BaseResponse<List<EventSimpleResponse>>> getEndedEvents();
 
   @GetMapping
-  @Operation(summary = "다가오는/예정된/종료된 행사 조회", description = "다가오는/예정된/종료된 3분류로 행사를 하나씩 반환합니다.")
+  @Operation(
+      summary = "다가오는/예정된/종료된 행사 조회",
+      description = "다가오는(가장 가까운 D-day 1개) / 예정된(그 다음 1개) / 종료된(가장 최근 종료 1개)로 반환합니다.")
   ResponseEntity<BaseResponse<EventGroupResponse>> getEventGroups();
 
   /* =========================
