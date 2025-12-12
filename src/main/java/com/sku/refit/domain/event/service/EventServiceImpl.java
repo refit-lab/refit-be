@@ -81,10 +81,13 @@ public class EventServiceImpl implements EventService {
 
   @Override
   @Transactional
-  public EventDetailResponse updateEvent(Long id, EventInfoRequest request, MultipartFile thumbnail) {
+  public EventDetailResponse updateEvent(
+      Long id, EventInfoRequest request, MultipartFile thumbnail) {
 
-    Event event = eventRepository.findById(id)
-        .orElseThrow(() -> new CustomException(EventErrorCode.EVENT_NOT_FOUND));
+    Event event =
+        eventRepository
+            .findById(id)
+            .orElseThrow(() -> new CustomException(EventErrorCode.EVENT_NOT_FOUND));
 
     try {
       event.update(
@@ -92,8 +95,7 @@ public class EventServiceImpl implements EventService {
           request.getDescription(),
           request.getDate(),
           request.getLocation(),
-          request.getDetailLink()
-      );
+          request.getDetailLink());
 
       if (thumbnail != null && !thumbnail.isEmpty()) {
         replaceThumbnail(event, id, thumbnail);
@@ -249,6 +251,7 @@ public class EventServiceImpl implements EventService {
     try {
       user = userService.getCurrentUser();
     } catch (Exception e) {
+      log.debug("[EVENT] getEventDetail - unauthenticated request");
     }
 
     Boolean isReserved = null;
