@@ -12,4 +12,6 @@ public enum PathName {
   POST,
   @Schema(description = "옷")
   CLOTH,
+  @Schema(description = "행사")
+  EVENT
 }

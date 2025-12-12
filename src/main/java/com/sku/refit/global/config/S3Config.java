@@ -45,6 +45,9 @@ public class S3Config {
   @Value("${cloud.aws.s3.path.cloth}")
   private String clothPath;
 
+  @Value("${cloud.aws.s3.path.event}")
+  private String eventPath;
+
   @PostConstruct
   public void init() {
     this.awsCredentials = new BasicAWSCredentials(accessKey, secretKey);

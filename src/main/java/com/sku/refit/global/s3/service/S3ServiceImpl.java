@@ -3,6 +3,11 @@
  */
 package com.sku.refit.global.s3.service;
 
+import com.sksamuel.scrimage.ImmutableImage;
+import com.sksamuel.scrimage.webp.WebpWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service {
+
+  private static final int WEBP_QUALITY = 90;
 
   private final AmazonS3 amazonS3;
   private final S3Config s3Config;
@@ -194,6 +201,80 @@ public class S3ServiceImpl implements S3Service {
       case PROFILE_IMAGE -> s3Config.getProfileImagePath();
       case POST -> s3Config.getPostPath();
       case CLOTH -> s3Config.getClothPath();
+      case EVENT -> s3Config.getEventPath();
     };
+  }
+
+  @Override
+  public String uploadFileAsWebp(PathName pathName, MultipartFile file) {
+
+    validateFile(file);
+
+    byte[] webpBytes = convertToWebp(file);
+
+    String keyName = getPrefix(pathName) + "/" + UUID.randomUUID() + ".webp";
+
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentLength(webpBytes.length);
+    metadata.setContentType("image/webp");
+
+    try (ByteArrayInputStream inputStream = new ByteArrayInputStream(webpBytes)) {
+      amazonS3.putObject(
+          new PutObjectRequest(s3Config.getBucket(), keyName, inputStream, metadata)
+      );
+
+      log.info("파일(WebP) 업로드 성공 - bucket: {}, keyName: {}", s3Config.getBucket(), keyName);
+
+      return amazonS3.getUrl(s3Config.getBucket(), keyName).toString();
+
+    } catch (Exception e) {
+      log.error(
+          "S3 WebP 업로드 중 오류 발생 - bucket: {}, keyName: {}", s3Config.getBucket(), keyName, e);
+      throw new CustomException(S3ErrorStatus.FILE_SERVER_ERROR);
+    }
+  }
+
+  private byte[] convertToWebp(MultipartFile file) {
+
+    try {
+      ImmutableImage image;
+      try {
+        image = ImmutableImage.loader().fromStream(file.getInputStream());
+      } catch (IOException e) {
+        log.error(
+            "이미지 디코딩 오류 - originalFilename: {}, message: {}",
+            file.getOriginalFilename(),
+            e.getMessage());
+        throw new CustomException(S3ErrorStatus.FILE_SERVER_ERROR);
+      }
+
+      if (image == null) {
+        log.warn("이미지 디코딩 실패 - originalFilename: {}", file.getOriginalFilename());
+        throw new CustomException(S3ErrorStatus.FILE_SERVER_ERROR);
+      }
+
+      WebpWriter writer = WebpWriter.DEFAULT.withQ(WEBP_QUALITY);
+
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      try {
+        image.forWriter(writer).write(baos);
+      } catch (IOException e) {
+        log.error(
+            "WebP 변환 중 IO 오류 - originalFilename: {}, message: {}",
+            file.getOriginalFilename(), e.getMessage());
+        throw new CustomException(S3ErrorStatus.FILE_SERVER_ERROR);
+      }
+
+      return baos.toByteArray();
+
+    } catch (CustomException e) {
+      throw e;
+
+    } catch (Exception e) {
+      log.error(
+          "WebP 변환 중 예기치 않은 오류 - originalFilename: {}, message: {}",
+          file.getOriginalFilename(), e.getMessage());
+      throw new CustomException(S3ErrorStatus.FILE_SERVER_ERROR);
+    }
   }
 }
