@@ -125,7 +125,7 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/error")
                 .permitAll()
-                .requestMatchers(RegexRequestMatcher.regexMatcher(".*/admin/.*"))
+                .requestMatchers(RegexRequestMatcher.regexMatcher(".*/admin($|/.*)"))
                 .hasRole("ADMIN")
                 .requestMatchers(RegexRequestMatcher.regexMatcher(".*/dev/.*"))
                 .hasRole("DEVELOPER")

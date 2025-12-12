@@ -39,4 +39,6 @@ public interface S3Service {
   String extractKeyNameFromUrl(String imageUrl);
 
   void fileExists(String keyName);
+
+  String uploadFileAsWebp(PathName pathName, MultipartFile file);
 }
