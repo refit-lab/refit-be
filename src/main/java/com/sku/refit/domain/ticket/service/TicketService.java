@@ -36,7 +36,9 @@ public interface TicketService {
    *
    * <p>생성된 토큰은 QR 코드로 사용자에게 전달되며, 이후 모든 검증/체크인 로직은 해당 토큰을 기준으로 수행됩니다.
    *
-   * @param request 티켓 발급 요청 정보 (티켓 타입, 대상 ID, 발급 대상 사용자)
+   * @param type 티켓 타입
+   * @param targetId 대상 ID (EVENT/CLOTH의 식별자)
+   * @param userId (옵션) 관리자 발급 시 대상 사용자 ID, null이면 현재 사용자
    * @return 발급된 티켓 상세 정보 (type, targetId, token, 발급 시각 등)
    */
   TicketDetailResponse issueTicket(TicketType type, Long targetId, Long userId);
