@@ -3,6 +3,7 @@
  */
 package com.sku.refit.domain.ticket.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.sku.refit.domain.ticket.dto.request.TicketRequest.*;
@@ -39,9 +40,10 @@ public interface TicketService {
    * @param type 티켓 타입
    * @param targetId 대상 ID (EVENT/CLOTH의 식별자)
    * @param userId (옵션) 관리자 발급 시 대상 사용자 ID, null이면 현재 사용자
+   * @param expiresAt (옵션) 티켓 만료일
    * @return 발급된 티켓 상세 정보 (type, targetId, token, 발급 시각 등)
    */
-  TicketDetailResponse issueTicket(TicketType type, Long targetId, Long userId);
+  TicketDetailResponse issueTicket(TicketType type, Long targetId, Long userId, LocalDateTime expiresAt);
 
   /* =========================
    * Verify

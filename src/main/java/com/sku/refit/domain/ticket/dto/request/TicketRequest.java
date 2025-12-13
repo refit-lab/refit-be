@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 import com.sku.refit.domain.ticket.entity.TicketType;
 
+import java.time.LocalDateTime;
 import lombok.*;
 
 public class TicketRequest {
@@ -20,6 +21,7 @@ public class TicketRequest {
     @NotNull private Long targetId;
 
     private Long userId;
+    private LocalDateTime expiresAt;
   }
 
   @Getter

@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) SKU 다시입을Lab 
+/*
+ * Copyright (c) SKU 다시입을Lab
  */
 package com.sku.refit.domain.ticket.dto.response;
 
@@ -23,6 +23,7 @@ public class TicketResponse {
 
     private LocalDateTime issuedAt;
     private LocalDateTime usedAt;
+    private LocalDateTime expiresAt;
   }
 
   @Getter
@@ -39,6 +40,7 @@ public class TicketResponse {
 
     private LocalDateTime issuedAt;
     private LocalDateTime usedAt;
+    private LocalDateTime expiresAt;
   }
 
   @Getter
@@ -53,9 +55,9 @@ public class TicketResponse {
     private String qrPayload;
 
     private LocalDateTime usedAt;
+    private LocalDateTime expiresAt;
   }
 
-  /** 사용자 조회용: - EVENT: "사용한 행사"만 조회(usedAt != null) - CLOTH: "받은 티켓" 전체 조회(usedAt 상관 없음) */
   @Getter
   @Builder
   public static class MyTicketItemResponse {
@@ -68,5 +70,6 @@ public class TicketResponse {
 
     private LocalDateTime issuedAt;
     private LocalDateTime usedAt;
+    private LocalDateTime expiresAt;
   }
 }

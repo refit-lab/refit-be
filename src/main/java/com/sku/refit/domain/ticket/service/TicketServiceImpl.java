@@ -41,7 +41,7 @@ public class TicketServiceImpl implements TicketService {
 
   @Override
   @Transactional
-  public TicketDetailResponse issueTicket(TicketType type, Long targetId, Long userId) {
+  public TicketDetailResponse issueTicket(TicketType type, Long targetId, Long userId,  LocalDateTime expiresAt) {
 
     if (type == null || targetId == null) {
       throw new CustomException(TicketErrorCode.TICKET_BAD_REQUEST);
@@ -63,7 +63,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     try {
-      Ticket ticket = ticketMapper.toEntity(type, targetId, issueUserId, token);
+      Ticket ticket = ticketMapper.toEntity(type, targetId, issueUserId, token, expiresAt);
       Ticket saved = ticketRepository.save(ticket);
       return ticketMapper.toDetail(saved);
 
@@ -88,11 +88,17 @@ public class TicketServiceImpl implements TicketService {
   public VerifyTicketResponse verifyTicket(VerifyTicketRequest request) {
 
     validateToken(request.getToken());
+    LocalDateTime now = LocalDateTime.now();
 
     try {
       return ticketRepository
           .findByTokenForUpdate(request.getToken())
-          .map(ticketMapper::toVerifyFound)
+          .map(ticket -> {
+            if (ticket.isExpired(now)) {
+              return ticketMapper.toVerifyExpired(ticket);
+            }
+            return ticketMapper.toVerifyFound(ticket);
+          })
           .orElseGet(ticketMapper::toVerifyNotFound);
 
     } catch (CustomException e) {
@@ -188,11 +194,6 @@ public class TicketServiceImpl implements TicketService {
    * Private
    * ========================= */
 
-  private void validateIssueRequest(IssueTicketRequest request) {
-    if (request == null || request.getType() == null || request.getTargetId() == null) {
-      throw new CustomException(TicketErrorCode.TICKET_BAD_REQUEST);
-    }
-  }
 
   private void validateToken(String token) {
     if (token == null || token.isBlank()) {

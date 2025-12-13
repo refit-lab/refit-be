@@ -1,7 +1,9 @@
-/* 
- * Copyright (c) SKU 다시입을Lab 
+/*
+ * Copyright (c) SKU 다시입을Lab
  */
 package com.sku.refit.domain.ticket.mapper;
+
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
@@ -18,9 +20,22 @@ public class TicketMapper {
 
   private final TicketQrPayloadFactory qrPayloadFactory;
 
-  /** 발급 요청 + userId + token -> Ticket 엔티티 */
+  /** 발급 요청 + userId + token -> Ticket 엔티티 (하위호환) */
   public Ticket toEntity(TicketType type, Long targetId, Long userId, String token) {
-    return Ticket.builder().type(type).targetId(targetId).userId(userId).token(token).build();
+    return toEntity(type, targetId, userId, token, null);
+  }
+
+  /** 발급 요청 + userId + token + expiresAt -> Ticket 엔티티 */
+  public Ticket toEntity(
+      TicketType type, Long targetId, Long userId, String token, LocalDateTime expiresAt) {
+
+    return Ticket.builder()
+        .type(type)
+        .targetId(targetId)
+        .userId(userId)
+        .token(token)
+        .expiresAt(expiresAt)
+        .build();
   }
 
   public TicketDetailResponse toDetail(Ticket ticket) {
@@ -32,6 +47,7 @@ public class TicketMapper {
         .qrPayload(qrPayloadFactory.create(ticket.getToken()))
         .issuedAt(ticket.getCreatedAt())
         .usedAt(ticket.getUsedAt())
+        .expiresAt(ticket.getExpiresAt())
         .build();
   }
 
@@ -45,6 +61,22 @@ public class TicketMapper {
         .qrPayload(qrPayloadFactory.create(ticket.getToken()))
         .issuedAt(ticket.getCreatedAt())
         .usedAt(ticket.getUsedAt())
+        .expiresAt(ticket.getExpiresAt())
+        .build();
+  }
+
+  /** 검증 응답: 만료된 티켓 */
+  public VerifyTicketResponse toVerifyExpired(Ticket ticket) {
+    return VerifyTicketResponse.builder()
+        .valid(false)                 // 만료 → 유효하지 않음
+        .used(false)                  // 사용 불가 상태
+        .ticketId(ticket.getId())
+        .type(ticket.getType())
+        .targetId(ticket.getTargetId())
+        .qrPayload(qrPayloadFactory.create(ticket.getToken()))
+        .issuedAt(ticket.getCreatedAt())
+        .usedAt(ticket.getUsedAt())
+        .expiresAt(ticket.getExpiresAt())
         .build();
   }
 
@@ -59,6 +91,7 @@ public class TicketMapper {
         .qrPayload(qrPayloadFactory.create(ticket.getToken()))
         .issuedAt(ticket.getCreatedAt())
         .usedAt(ticket.getUsedAt())
+        .expiresAt(ticket.getExpiresAt())
         .build();
   }
 
@@ -76,6 +109,7 @@ public class TicketMapper {
         .targetId(ticket.getTargetId())
         .qrPayload(qrPayloadFactory.create(ticket.getToken()))
         .usedAt(ticket.getUsedAt())
+        .expiresAt(ticket.getExpiresAt())
         .build();
   }
 }
