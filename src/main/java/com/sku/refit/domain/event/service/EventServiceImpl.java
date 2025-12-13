@@ -21,6 +21,8 @@ import com.sku.refit.domain.event.mapper.EventMapper;
 import com.sku.refit.domain.event.repository.EventRepository;
 import com.sku.refit.domain.event.repository.EventReservationImageRepository;
 import com.sku.refit.domain.event.repository.EventReservationRepository;
+import com.sku.refit.domain.ticket.entity.TicketType;
+import com.sku.refit.domain.ticket.service.TicketService;
 import com.sku.refit.domain.user.entity.User;
 import com.sku.refit.domain.user.service.UserService;
 import com.sku.refit.global.exception.CustomException;
@@ -43,6 +45,7 @@ public class EventServiceImpl implements EventService {
   private final S3Service s3Service;
   private final UserService userService;
   private final EventMapper eventMapper;
+  private final TicketService ticketService;
 
   /* =========================
    * Admin
@@ -308,6 +311,12 @@ public class EventServiceImpl implements EventService {
     EventReservation reservation = eventMapper.toReservation(event, user, request);
 
     eventReservationRepository.save(reservation);
+    ticketService.issueTicket(
+        TicketType.EVENT,
+        event.getId(),
+        user.getId(),
+        event.getDate() // 행사 필드에 종료 일자 추가시 종료 일자로 변경 필요
+        );
 
     if (clothImageList != null && !clothImageList.isEmpty()) {
       for (MultipartFile f : clothImageList) {

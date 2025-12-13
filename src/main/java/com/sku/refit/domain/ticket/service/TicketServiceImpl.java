@@ -3,6 +3,7 @@
  */
 package com.sku.refit.domain.ticket.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,7 +42,8 @@ public class TicketServiceImpl implements TicketService {
 
   @Override
   @Transactional
-  public TicketDetailResponse issueTicket(TicketType type, Long targetId, Long userId) {
+  public TicketDetailResponse issueTicket(
+      TicketType type, Long targetId, Long userId, LocalDate expiresAt) {
 
     if (type == null || targetId == null) {
       throw new CustomException(TicketErrorCode.TICKET_BAD_REQUEST);
@@ -63,7 +65,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     try {
-      Ticket ticket = ticketMapper.toEntity(type, targetId, issueUserId, token);
+      Ticket ticket = ticketMapper.toEntity(type, targetId, issueUserId, token, expiresAt);
       Ticket saved = ticketRepository.save(ticket);
       return ticketMapper.toDetail(saved);
 
@@ -88,11 +90,18 @@ public class TicketServiceImpl implements TicketService {
   public VerifyTicketResponse verifyTicket(VerifyTicketRequest request) {
 
     validateToken(request.getToken());
+    LocalDate today = LocalDate.now();
 
     try {
       return ticketRepository
           .findByTokenForUpdate(request.getToken())
-          .map(ticketMapper::toVerifyFound)
+          .map(
+              ticket -> {
+                if (ticket.isExpired(today)) {
+                  return ticketMapper.toVerifyExpired(ticket);
+                }
+                return ticketMapper.toVerifyFound(ticket);
+              })
           .orElseGet(ticketMapper::toVerifyNotFound);
 
     } catch (CustomException e) {
@@ -187,12 +196,6 @@ public class TicketServiceImpl implements TicketService {
   /* =========================
    * Private
    * ========================= */
-
-  private void validateIssueRequest(IssueTicketRequest request) {
-    if (request == null || request.getType() == null || request.getTargetId() == null) {
-      throw new CustomException(TicketErrorCode.TICKET_BAD_REQUEST);
-    }
-  }
 
   private void validateToken(String token) {
     if (token == null || token.isBlank()) {

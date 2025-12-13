@@ -18,6 +18,7 @@ public enum TicketErrorCode implements BaseErrorCode {
 
   TICKET_NOT_FOUND("TICKET0010", "티켓을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   TICKET_ALREADY_USED("TICKET020", "이미 사용된 티켓입니다.", HttpStatus.CONFLICT),
+  TICKET_EXPIRED("TICKET021", "만료된 티켓입니다.", HttpStatus.GONE),
 
   TICKET_TOKEN_GENERATION_FAILED(
       "TICKET030", "티켓 토큰 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
