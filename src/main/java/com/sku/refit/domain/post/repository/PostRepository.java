@@ -13,8 +13,8 @@ import com.sku.refit.domain.post.entity.Post;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-  Page<Post> findByCategoryListContaining(String category, Pageable pageable);
+  Page<Post> findByPostCategoryContaining(String category, Pageable pageable);
 
-  Page<Post> findByCategoryListContainingAndIdLessThan(
+  Page<Post> findByPostCategoryContainingAndIdLessThan(
       String category, Long lastPostId, Pageable pageable);
 }

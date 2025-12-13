@@ -6,6 +6,8 @@ package com.sku.refit.domain.post.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.sku.refit.domain.post.entity.PostCategory;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,8 +17,8 @@ import lombok.Getter;
 @Schema(title = "PostDetailResponse DTO", description = "게시글 상세 정보 응답 반환")
 public class PostDetailResponse {
 
-  @Schema(description = "카테고리 리스트", example = "자유, 수선")
-  private List<String> categoryList;
+  @Schema(description = "카테고리", example = "FREE")
+  private PostCategory category;
 
   @Schema(description = "게시글 식별자", example = "1")
   private Long postId;

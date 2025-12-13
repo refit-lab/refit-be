@@ -3,8 +3,6 @@
  */
 package com.sku.refit.domain.post.dto.request;
 
-import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -22,8 +20,8 @@ import lombok.NoArgsConstructor;
 public class PostRequest {
 
   @NotEmpty(message = "게시글 카테고리는 필수입니다.")
-  @Schema(description = "게시글 카테고리")
-  private List<String> categoryList;
+  @Schema(description = "게시글 카테고리", example = "FREE")
+  private String postCategory;
 
   @NotBlank(message = "게시글 제목은 필수입니다.")
   @Schema(description = "게시글 제목", example = "21파티에선 정확히 어떤걸 하나요?")

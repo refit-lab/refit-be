@@ -11,17 +11,19 @@ import com.sku.refit.domain.comment.entity.Comment;
 import com.sku.refit.domain.post.dto.request.PostRequest;
 import com.sku.refit.domain.post.dto.response.PostDetailResponse;
 import com.sku.refit.domain.post.entity.Post;
+import com.sku.refit.domain.post.entity.PostCategory;
 import com.sku.refit.domain.user.entity.User;
 
 @Component
 public class PostMapper {
 
-  public Post toPost(PostRequest postRequest, List<String> imageUrlList, User user) {
+  public Post toPost(
+      PostCategory postCategory, PostRequest postRequest, List<String> imageUrlList, User user) {
 
     return Post.builder()
         .title(postRequest.getTitle())
         .content(postRequest.getContent())
-        .categoryList(postRequest.getCategoryList())
+        .postCategory(postCategory)
         .imageUrlList(imageUrlList)
         .user(user)
         .build();
@@ -36,7 +38,7 @@ public class PostMapper {
         .views(post.getViews())
         .createdAt(post.getCreatedAt())
         .nickname(user.getNickname())
-        .categoryList(post.getCategoryList())
+        .category(post.getPostCategory())
         .commentIdList(post.getCommentList().stream().map(Comment::getId).toList())
         .build();
   }
