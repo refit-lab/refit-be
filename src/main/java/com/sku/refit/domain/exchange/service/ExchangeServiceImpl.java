@@ -59,11 +59,10 @@ public class ExchangeServiceImpl implements ExchangeService {
       }
     }
 
-    ExchangeCategory category = ExchangeCategory.valueOf(request.getExchangeCategory());
-    ClothStatus status = ClothStatus.valueOf(request.getClothStatus());
-    ClothSize size = ClothSize.valueOf(request.getClothSize());
-    List<ExchangeCategory> preferCategoryList =
-        request.getPreferCategoryList().stream().map(ExchangeCategory::valueOf).toList();
+    ExchangeCategory category = request.getExchangeCategory();
+    ClothStatus status = request.getClothStatus();
+    ClothSize size = request.getClothSize();
+    List<ExchangeCategory> preferCategoryList = request.getPreferCategoryList().stream().toList();
 
     ExchangePost exchangePost =
         exchangeMapper.toExchangePost(
@@ -115,7 +114,7 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     ExchangePost exchangePost =
         exchangeRepository
-            .findById(exchangePostId)
+            .findByIdAndExchangeStatus(exchangePostId, ExchangeStatus.BEFORE)
             .orElseThrow(() -> new CustomException(ExchangeErrorCode.EXCHANGE_NOT_FOUND));
 
     if (!exchangePost.getUser().getId().equals(user.getId())) {
@@ -136,11 +135,10 @@ public class ExchangeServiceImpl implements ExchangeService {
       }
     }
 
-    ExchangeCategory category = ExchangeCategory.valueOf(request.getExchangeCategory());
-    ClothStatus status = ClothStatus.valueOf(request.getClothStatus());
-    ClothSize size = ClothSize.valueOf(request.getClothSize());
-    List<ExchangeCategory> preferCategoryList =
-        request.getPreferCategoryList().stream().map(ExchangeCategory::valueOf).toList();
+    ExchangeCategory category = request.getExchangeCategory();
+    ClothStatus status = request.getClothStatus();
+    ClothSize size = request.getClothSize();
+    List<ExchangeCategory> preferCategoryList = request.getPreferCategoryList().stream().toList();
 
     exchangePost.update(
         newImageUrlList,
@@ -173,11 +171,10 @@ public class ExchangeServiceImpl implements ExchangeService {
     ExchangePost exchangePost =
         exchangeRepository
             .findById(exchangePostId)
-            .orElseThrow(() -> new IllegalArgumentException("교환 게시글이 존재하지 않습니다."));
+            .orElseThrow(() -> new CustomException(ExchangeErrorCode.EXCHANGE_NOT_FOUND));
 
-    // 작성자 검증
     if (!exchangePost.getUser().getId().equals(user.getId())) {
-      throw new IllegalStateException("게시글 삭제 권한이 없습니다.");
+      throw new CustomException(ExchangeErrorCode.EXCHANGE_ACCESS_DENIED);
     }
 
     // 이미지 삭제

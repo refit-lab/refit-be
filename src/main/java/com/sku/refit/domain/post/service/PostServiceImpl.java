@@ -56,7 +56,12 @@ public class PostServiceImpl implements PostService {
       }
     }
 
-    PostCategory category = PostCategory.valueOf(request.getPostCategory());
+    PostCategory category;
+    try {
+      category = PostCategory.valueOf(request.getPostCategory());
+    } catch (IllegalArgumentException e) {
+      throw new CustomException(PostErrorCode.INVALID_CATEGORY);
+    }
 
     Post post = postMapper.toPost(category, request, imageUrlList, user);
     postRepository.save(post);

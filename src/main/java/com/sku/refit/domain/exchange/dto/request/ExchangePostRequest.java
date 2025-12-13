@@ -7,6 +7,11 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
+import com.sku.refit.domain.exchange.entity.ClothSize;
+import com.sku.refit.domain.exchange.entity.ClothStatus;
+import com.sku.refit.domain.exchange.entity.ExchangeCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -25,17 +30,14 @@ public class ExchangePostRequest {
   @Schema(description = "교환 게시글 제목", example = "오버핏 흰색 셔츠")
   private String title;
 
-  @NotBlank(message = "교환 카테고리는 필수입니다.")
-  @Schema(description = "교환 카테고리", example = "OUTER")
-  private String exchangeCategory;
+  @NotNull(message = "교환 카테고리는 필수입니다.") @Schema(description = "교환 카테고리", example = "OUTER")
+  private ExchangeCategory exchangeCategory;
 
-  @NotBlank(message = "옷 상태는 필수입니다.")
-  @Schema(description = "옷 상태", example = "GOOD")
-  private String clothStatus;
+  @NotNull(message = "옷 상태는 필수입니다.") @Schema(description = "옷 상태", example = "GOOD")
+  private ClothStatus clothStatus;
 
-  @NotBlank(message = "옷 사이즈는 필수입니다.")
-  @Schema(description = "옷 사이즈", example = "M")
-  private String clothSize;
+  @NotNull(message = "옷 사이즈는 필수입니다.") @Schema(description = "옷 사이즈", example = "M")
+  private ClothSize clothSize;
 
   @NotBlank(message = "교환 게시글 설명은 필수입니다.")
   @Schema(description = "교환게시글 설명", example = "아이템에 대한 상세 설명을 작성해주세요.")
@@ -43,18 +45,16 @@ public class ExchangePostRequest {
 
   @NotEmpty(message = "교환 선호 카테고리는 필수입니다.")
   @Schema(description = "선호 카테고리")
-  private List<String> preferCategoryList;
+  private List<ExchangeCategory> preferCategoryList;
 
   @NotBlank(message = "교환 희망 스팟은 필수입니다.")
   @Schema(description = "교환 희망 스팟", example = "서울역")
   private String exchangeSpot;
 
-  @NotBlank(message = "교환 희망 스팟 위도는 필수입니다.")
-  @Schema(description = "교환 희망 스팟 위도", example = "37.544018")
+  @NotNull(message = "교환 희망 스팟 위도는 필수입니다.") @Schema(description = "교환 희망 스팟 위도", example = "37.544018")
   private Double spotLatitude;
 
-  @NotBlank(message = "교환 희망 스팟 경도는 필수입니다.")
-  @Schema(description = "교환 희망 스팟 경도", example = "126.951592")
+  @NotNull(message = "교환 희망 스팟 경도는 필수입니다.") @Schema(description = "교환 희망 스팟 경도", example = "126.951592")
   private Double spotLongitude;
 
   @NotBlank(message = "교환 편지는 필수입니다.")

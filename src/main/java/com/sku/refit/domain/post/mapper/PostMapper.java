@@ -38,7 +38,7 @@ public class PostMapper {
         .views(post.getViews())
         .createdAt(post.getCreatedAt())
         .nickname(post.getUser().getNickname())
-        .isAuthor(post.getUser().getUsername().equals(user.getUsername()))
+        .isAuthor(user != null && post.getUser().getUsername().equals(user.getUsername()))
         .category(post.getPostCategory())
         .commentIdList(post.getCommentList().stream().map(Comment::getId).toList())
         .build();

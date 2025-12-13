@@ -16,7 +16,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-@Schema(title = "PostDetailResponse DTO", description = "교환글 상세 정보 응답 반환")
+@Schema(title = "ExchangePostDetailResponse DTO", description = "교환글 상세 정보 응답 반환")
 public class ExchangePostDetailResponse {
 
   @Schema(description = "교환 게시글 식별자", example = "1")
