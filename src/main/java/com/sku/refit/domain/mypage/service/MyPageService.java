@@ -34,7 +34,7 @@ public interface MyPageService {
    * ========================= */
 
   /**
-   * 사용자가 <b>실제로 참여(체크인)한 행사 목록</b>을 조회합니다.
+   * 사용자가 실제로 참여(체크인)한 행사 목록을 조회합니다.
    *
    * <p>이 메서드는 다음 조건을 만족하는 티켓을 기준으로 합니다.
    *
@@ -47,5 +47,12 @@ public interface MyPageService {
    */
   JoinedEventsResponse getJoinedEvents();
 
+  /**
+   * 로그인한 사용자가 작성한 게시글 목록을 커서 기반 무한 스크롤 방식으로 조회합니다.
+   *
+   * @param lastPostId 마지막으로 조회한 게시글 ID (첫 조회 시 {@code null})
+   * @param size 한 번에 조회할 게시글 개수
+   * @return 내가 작성한 게시글 무한 스크롤 응답
+   */
   InfiniteResponse<PostDetailResponse> getMyPosts(Long lastPostId, Integer size);
 }
