@@ -48,6 +48,11 @@ public interface PostController {
           @RequestPart(value = "imageList", required = false)
           List<MultipartFile> imageList);
 
+  @PostMapping("/{postId}/like")
+  @Operation(summary = "게시글 좋아요 토글", description = "게시글 좋아요를 등록/취소합니다.")
+  ResponseEntity<BaseResponse<Boolean>> togglePostLike(
+      @Parameter(description = "게시글 ID", example = "1") @PathVariable Long postId);
+
   @GetMapping("/admin")
   @Operation(summary = "[관리자] 게시글 전체 조회", description = "전체 게시글 리스트를 조회합니다.")
   ResponseEntity<BaseResponse<List<PostDetailResponse>>> getAllPosts();

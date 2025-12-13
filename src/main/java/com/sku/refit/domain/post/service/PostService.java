@@ -37,6 +37,16 @@ public interface PostService {
   PostDetailResponse createPost(PostRequest request, List<MultipartFile> images);
 
   /**
+   * 게시글 좋아요를 토글합니다.
+   *
+   * <p>이미 좋아요가 되어 있으면 취소하고, 좋아요가 없으면 새로 생성합니다.
+   *
+   * @param postId 게시글 ID
+   * @return true: 좋아요 상태 / false: 좋아요 취소 상태
+   */
+  boolean togglePostLike(Long postId);
+
+  /**
    * 모든 게시글 목록을 조회합니다.
    *
    * @return 게시글 상세 응답 리스트
