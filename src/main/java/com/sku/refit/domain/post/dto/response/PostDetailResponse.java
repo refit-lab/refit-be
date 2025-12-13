@@ -38,6 +38,9 @@ public class PostDetailResponse {
   @Schema(description = "게시글 작성자", example = "김다입")
   private String nickname;
 
+  @Schema(description = "작성자 본인 여부", example = "true")
+  private Boolean isAuthor;
+
   @Schema(description = "이미지 URL 리스트")
   private List<String> imageUrlList;
 
