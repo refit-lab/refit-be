@@ -8,6 +8,7 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,11 +19,9 @@ import com.sku.refit.global.page.response.InfiniteResponse;
 import com.sku.refit.global.response.BaseResponse;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class PostControllerImpl implements PostController {
 
   private final PostService postService;
@@ -33,6 +32,13 @@ public class PostControllerImpl implements PostController {
 
     PostDetailResponse response = postService.createPost(request, imageList);
     return ResponseEntity.ok(BaseResponse.success(response));
+  }
+
+  @Override
+  public ResponseEntity<BaseResponse<Boolean>> togglePostLike(@PathVariable Long postId) {
+
+    boolean liked = postService.togglePostLike(postId);
+    return ResponseEntity.ok(BaseResponse.success(liked));
   }
 
   @Override
