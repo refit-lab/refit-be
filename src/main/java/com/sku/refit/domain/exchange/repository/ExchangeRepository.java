@@ -3,8 +3,8 @@
  */
 package com.sku.refit.domain.exchange.repository;
 
-import com.sku.refit.domain.exchange.entity.ExchangeStatus;
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,15 +13,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.sku.refit.domain.exchange.entity.ExchangePost;
+import com.sku.refit.domain.exchange.entity.ExchangeStatus;
 
 @Repository
 public interface ExchangeRepository extends JpaRepository<ExchangePost, Long> {
 
-  Optional<ExchangePost> findByIdAndExchangeStatus(
-      Long id, ExchangeStatus exchangeStatus
-  );
+  Optional<ExchangePost> findByIdAndExchangeStatus(Long id, ExchangeStatus exchangeStatus);
 
-  @Query("""
+  @Query(
+      """
     SELECT e
     FROM ExchangePost e
     WHERE e.exchangeStatus = :status
@@ -35,6 +35,5 @@ public interface ExchangeRepository extends JpaRepository<ExchangePost, Long> {
       @Param("latitude") Double latitude,
       @Param("longitude") Double longitude,
       @Param("status") ExchangeStatus status,
-      Pageable pageable
-  );
+      Pageable pageable);
 }

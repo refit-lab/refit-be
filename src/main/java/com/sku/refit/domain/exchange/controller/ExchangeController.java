@@ -64,9 +64,7 @@ public interface ExchangeController {
   @GetMapping("/{exchangePostId}")
   @Operation(summary = "교환 게시글 단일 조회", description = "교환 게시글 ID로 단일 게시글을 조회합니다.")
   ResponseEntity<BaseResponse<ExchangePostDetailResponse>> getExchangePost(
-      @Parameter(description = "교환 게시글 ID", example = "1")
-      @PathVariable Long exchangePostId
-  );
+      @Parameter(description = "교환 게시글 ID", example = "1") @PathVariable Long exchangePostId);
 
   @PutMapping(value = "/{exchangePostId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "교환 게시글 수정", description = "특정 교환 게시글을 수정합니다.")

@@ -3,7 +3,6 @@
  */
 package com.sku.refit.domain.exchange.service;
 
-import com.sku.refit.domain.exchange.entity.ExchangeStatus;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +19,7 @@ import com.sku.refit.domain.exchange.entity.ClothSize;
 import com.sku.refit.domain.exchange.entity.ClothStatus;
 import com.sku.refit.domain.exchange.entity.ExchangeCategory;
 import com.sku.refit.domain.exchange.entity.ExchangePost;
+import com.sku.refit.domain.exchange.entity.ExchangeStatus;
 import com.sku.refit.domain.exchange.exception.ExchangeErrorCode;
 import com.sku.refit.domain.exchange.mapper.ExchangeMapper;
 import com.sku.refit.domain.exchange.repository.ExchangeRepository;
@@ -84,7 +84,9 @@ public class ExchangeServiceImpl implements ExchangeService {
   public PageResponse<ExchangePostCardResponse> getExchangePostsByLocation(
       Pageable pageable, Double latitude, Double longitude) {
 
-    Page<ExchangePost> page = exchangeRepository.findByDistanceAndStatus(latitude, longitude, ExchangeStatus.BEFORE, pageable);
+    Page<ExchangePost> page =
+        exchangeRepository.findByDistanceAndStatus(
+            latitude, longitude, ExchangeStatus.BEFORE, pageable);
 
     Page<ExchangePostCardResponse> mappedPage = page.map(exchangeMapper::toCardResponse);
 

@@ -64,8 +64,7 @@ public class ExchangeControllerImpl implements ExchangeController {
   public ResponseEntity<BaseResponse<ExchangePostDetailResponse>> getExchangePost(
       Long exchangePostId) {
 
-    ExchangePostDetailResponse response =
-        exchangeService.getExchangePost(exchangePostId);
+    ExchangePostDetailResponse response = exchangeService.getExchangePost(exchangePostId);
 
     return ResponseEntity.ok(BaseResponse.success(response));
   }
