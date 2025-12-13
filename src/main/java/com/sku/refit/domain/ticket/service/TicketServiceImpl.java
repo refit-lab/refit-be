@@ -17,7 +17,6 @@ import com.sku.refit.domain.ticket.exception.TicketErrorCode;
 import com.sku.refit.domain.ticket.mapper.TicketMapper;
 import com.sku.refit.domain.ticket.repository.TicketRepository;
 import com.sku.refit.domain.ticket.util.TicketTokenGenerator;
-import com.sku.refit.domain.user.entity.User;
 import com.sku.refit.domain.user.service.UserService;
 import com.sku.refit.global.exception.CustomException;
 
@@ -73,11 +72,14 @@ public class TicketServiceImpl implements TicketService {
     } catch (Exception e) {
       log.error(
           "[TICKET] issueTicket - save failed, userId={}, type={}, targetId={}",
-          issueUserId, type, targetId, e
-      );
+          issueUserId,
+          type,
+          targetId,
+          e);
       throw new CustomException(TicketErrorCode.TICKET_ISSUE_FAILED);
     }
   }
+
   /* =========================
    * Verify
    * ========================= */

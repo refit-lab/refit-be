@@ -3,11 +3,11 @@
  */
 package com.sku.refit.domain.ticket.service;
 
-import com.sku.refit.domain.ticket.entity.TicketType;
 import java.util.List;
 
 import com.sku.refit.domain.ticket.dto.request.TicketRequest.*;
 import com.sku.refit.domain.ticket.dto.response.TicketResponse.*;
+import com.sku.refit.domain.ticket.entity.TicketType;
 
 /**
  * 티켓(Ticket) 관련 주요 기능을 제공하는 서비스 인터페이스입니다.

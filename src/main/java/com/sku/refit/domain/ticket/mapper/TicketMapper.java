@@ -3,12 +3,11 @@
  */
 package com.sku.refit.domain.ticket.mapper;
 
-import com.sku.refit.domain.ticket.entity.TicketType;
 import org.springframework.stereotype.Component;
 
-import com.sku.refit.domain.ticket.dto.request.TicketRequest.IssueTicketRequest;
 import com.sku.refit.domain.ticket.dto.response.TicketResponse.*;
 import com.sku.refit.domain.ticket.entity.Ticket;
+import com.sku.refit.domain.ticket.entity.TicketType;
 import com.sku.refit.domain.ticket.util.TicketQrPayloadFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -21,12 +20,7 @@ public class TicketMapper {
 
   /** 발급 요청 + userId + token -> Ticket 엔티티 */
   public Ticket toEntity(TicketType type, Long targetId, Long userId, String token) {
-    return Ticket.builder()
-        .type(type)
-        .targetId(targetId)
-        .userId(userId)
-        .token(token)
-        .build();
+    return Ticket.builder().type(type).targetId(targetId).userId(userId).token(token).build();
   }
 
   public TicketDetailResponse toDetail(Ticket ticket) {
