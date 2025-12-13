@@ -40,7 +40,7 @@ public class MyPageServiceImpl implements MyPageService {
     LocalDate today = LocalDate.now();
 
     Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-    Page<Ticket> ticketPage = ticketRepository.findActiveUnusedTickets(userId, today, pageable);
+    Page<Ticket> ticketPage = ticketRepository.findAllByUserId(userId, pageable);
 
     Map<Long, Event> eventMap = loadEventMap(ticketPage.getContent());
 
@@ -60,7 +60,6 @@ public class MyPageServiceImpl implements MyPageService {
       return JoinedEventsResponse.builder().items(List.of()).build();
     }
 
-    // 최신 usedAt 기준 eventId 중복 제거
     LinkedHashSet<Long> orderedEventIds = new LinkedHashSet<>();
     for (Ticket t : usedEventTickets) {
       orderedEventIds.add(t.getTargetId());

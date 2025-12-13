@@ -3,7 +3,6 @@
  */
 package com.sku.refit.domain.ticket.repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,15 +31,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
   @Query("SELECT t FROM Ticket t WHERE t.token = :token")
   Optional<Ticket> findByTokenForUpdate(@Param("token") String token);
 
-  @Query(
-      """
-      SELECT t
-      FROM Ticket t
-      WHERE t.userId = :userId
-        AND t.usedAt IS NULL
-        AND (t.expiresAt IS NULL OR t.expiresAt >= :today)
-      ORDER BY t.createdAt DESC
-      """)
-  Page<Ticket> findActiveUnusedTickets(
-      @Param("userId") Long userId, @Param("today") LocalDate today, Pageable pageable);
+  Page<Ticket> findAllByUserId(Long userId, Pageable pageable);
 }
