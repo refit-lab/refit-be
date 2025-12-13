@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
 public class CommentServiceImpl implements CommentService {
 
   private final CommentRepository commentRepository;
