@@ -11,6 +11,8 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -52,10 +54,14 @@ public class Post extends BaseTimeEntity {
   @Builder.Default
   private Long views = 0L;
 
-  @ElementCollection
-  @CollectionTable(name = "post_category", joinColumns = @JoinColumn(name = "post_id"))
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private List<String> categoryList;
+  private PostCategory postCategory;
+
+  //  @ElementCollection
+  //  @CollectionTable(name = "post_category", joinColumns = @JoinColumn(name = "post_id"))
+  //  @Column(nullable = false)
+  //  private List<String> categoryList;
 
   @ElementCollection
   @CollectionTable(name = "post_image_url", joinColumns = @JoinColumn(name = "post_id"))

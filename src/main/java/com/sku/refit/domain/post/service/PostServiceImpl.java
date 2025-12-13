@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sku.refit.domain.post.dto.request.PostRequest;
 import com.sku.refit.domain.post.dto.response.PostDetailResponse;
 import com.sku.refit.domain.post.entity.Post;
+import com.sku.refit.domain.post.entity.PostCategory;
 import com.sku.refit.domain.post.exception.PostErrorCode;
 import com.sku.refit.domain.post.mapper.PostMapper;
 import com.sku.refit.domain.post.repository.PostRepository;
@@ -33,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 
   private final PostRepository postRepository;
@@ -56,7 +56,14 @@ public class PostServiceImpl implements PostService {
       }
     }
 
-    Post post = postMapper.toPost(request, imageUrlList, user);
+    PostCategory category;
+    try {
+      category = PostCategory.valueOf(request.getPostCategory());
+    } catch (IllegalArgumentException e) {
+      throw new CustomException(PostErrorCode.INVALID_CATEGORY);
+    }
+
+    Post post = postMapper.toPost(category, request, imageUrlList, user);
     postRepository.save(post);
 
     log.info(
@@ -91,11 +98,11 @@ public class PostServiceImpl implements PostService {
     List<Post> posts;
 
     if (lastPostId == null) {
-      posts = postRepository.findByCategoryListContaining(category, pageable).getContent();
+      posts = postRepository.findByPostCategoryContaining(category, pageable).getContent();
     } else {
       posts =
           postRepository
-              .findByCategoryListContainingAndIdLessThan(category, lastPostId, pageable)
+              .findByPostCategoryContainingAndIdLessThan(category, lastPostId, pageable)
               .getContent();
     }
 
