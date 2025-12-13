@@ -4,6 +4,8 @@
 package com.sku.refit.domain.mypage.service;
 
 import com.sku.refit.domain.mypage.dto.response.MyPageResponse.*;
+import com.sku.refit.domain.post.dto.response.PostDetailResponse;
+import com.sku.refit.global.page.response.InfiniteResponse;
 
 public interface MyPageService {
 
@@ -44,4 +46,6 @@ public interface MyPageService {
    * @return 사용자가 참여한 행사 목록 응답
    */
   JoinedEventsResponse getJoinedEvents();
+
+  InfiniteResponse<PostDetailResponse> getMyPosts(Long lastPostId, Integer size);
 }

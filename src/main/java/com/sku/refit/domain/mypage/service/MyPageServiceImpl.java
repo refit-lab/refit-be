@@ -16,13 +16,22 @@ import com.sku.refit.domain.event.entity.Event;
 import com.sku.refit.domain.event.repository.EventRepository;
 import com.sku.refit.domain.mypage.dto.response.MyPageResponse.*;
 import com.sku.refit.domain.mypage.mapper.MyPageMapper;
+import com.sku.refit.domain.post.dto.response.PostDetailResponse;
+import com.sku.refit.domain.post.entity.Post;
+import com.sku.refit.domain.post.mapper.PostMapper;
+import com.sku.refit.domain.post.repository.PostRepository;
 import com.sku.refit.domain.ticket.entity.Ticket;
 import com.sku.refit.domain.ticket.entity.TicketType;
 import com.sku.refit.domain.ticket.repository.TicketRepository;
+import com.sku.refit.domain.user.entity.User;
 import com.sku.refit.domain.user.service.UserService;
+import com.sku.refit.global.page.mapper.InfiniteMapper;
+import com.sku.refit.global.page.response.InfiniteResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,6 +41,9 @@ public class MyPageServiceImpl implements MyPageService {
   private final TicketRepository ticketRepository;
   private final EventRepository eventRepository;
   private final MyPageMapper myPageMapper;
+  private final PostRepository postRepository;
+  private final PostMapper postMapper;
+  private final InfiniteMapper infiniteMapper;
 
   @Override
   public MyTicketsResponse getMyTickets(int page, int size) {
@@ -90,5 +102,43 @@ public class MyPageServiceImpl implements MyPageService {
 
     return eventRepository.findAllById(eventIds).stream()
         .collect(Collectors.toMap(Event::getId, Function.identity()));
+  }
+
+  @Override
+  public InfiniteResponse<PostDetailResponse> getMyPosts(Long lastPostId, Integer size) {
+
+    User user = userService.getCurrentUser();
+
+    Pageable pageable = PageRequest.of(0, size + 1, Sort.by(Sort.Direction.DESC, "id"));
+    List<Post> posts;
+
+    if (lastPostId == null) {
+      posts = postRepository.findAllByUserId(user.getId(), pageable).getContent();
+    } else {
+      posts =
+          postRepository
+              .findAllByUserIdAndIdLessThan(user.getId(), lastPostId, pageable)
+              .getContent();
+    }
+
+    boolean hasNext = posts.size() > size;
+    if (hasNext) {
+      posts = posts.subList(0, size);
+    }
+
+    List<PostDetailResponse> responseList =
+        posts.stream().map(post -> postMapper.toDetailResponse(post, user)).toList();
+
+    Long newLastCursor = posts.isEmpty() ? null : posts.getLast().getId();
+
+    log.info(
+        "[MY POST LIST] userId={}, lastPostId={}, size={}, resultCount={}, hasNext={}",
+        user.getId(),
+        lastPostId,
+        size,
+        responseList.size(),
+        hasNext);
+
+    return infiniteMapper.toInfiniteResponse(responseList, newLastCursor, hasNext, size);
   }
 }
