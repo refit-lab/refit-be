@@ -35,6 +35,10 @@ public interface CommentController {
       @RequestBody @Valid CommentRequest request,
       @Parameter(description = "댓글을 작성할 게시글 식별자", example = "1") @RequestParam Long postId);
 
+  @PostMapping("/{id}/like")
+  @Operation(summary = "댓글 좋아요 토글")
+  ResponseEntity<BaseResponse<Void>> toggleLike(@PathVariable Long id);
+
   @GetMapping
   @Operation(summary = "특정 게시글의 댓글 조회", description = "특정 게시글의 댓글 리스트를 조회합니다.")
   ResponseEntity<BaseResponse<List<CommentDetailResponse>>> getAllCommentsByPostId(

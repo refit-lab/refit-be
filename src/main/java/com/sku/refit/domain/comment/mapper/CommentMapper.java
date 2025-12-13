@@ -3,6 +3,8 @@
  */
 package com.sku.refit.domain.comment.mapper;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.sku.refit.domain.comment.dto.request.CommentRequest;
@@ -14,17 +16,32 @@ import com.sku.refit.domain.user.entity.User;
 @Component
 public class CommentMapper {
 
-  public Comment toComment(CommentRequest request, User user, Post post) {
-    return Comment.builder().content(request.getContent()).user(user).post(post).build();
+  public Comment toComment(CommentRequest request, Comment parent, User user, Post post) {
+    return Comment.builder()
+        .content(request.getContent())
+        .parent(parent)
+        .user(user)
+        .post(post)
+        .build();
   }
 
-  public CommentDetailResponse toDetailResponse(Comment comment, User user) {
+  public CommentDetailResponse toDetailResponse(
+      Comment comment,
+      User user,
+      Long likeCount,
+      Boolean isLiked,
+      List<CommentDetailResponse> replies) {
 
     return CommentDetailResponse.builder()
         .commentId(comment.getId())
         .content(comment.getContent())
+        .nickname(comment.getUser().getNickname())
         .isWriter(comment.getUser().getId().equals(user.getId()))
         .createdAt(comment.getCreatedAt())
+        .parentCommentId(comment.getParent() != null ? comment.getParent().getId() : null)
+        .likeCount(likeCount)
+        .isLiked(isLiked)
+        .replies(replies)
         .build();
   }
 }

@@ -36,6 +36,13 @@ public class CommentControllerImpl implements CommentController {
   }
 
   @Override
+  public ResponseEntity<BaseResponse<Void>> toggleLike(@PathVariable Long id) {
+
+    commentService.toggleLike(id);
+    return ResponseEntity.ok(BaseResponse.success());
+  }
+
+  @Override
   public ResponseEntity<BaseResponse<List<CommentDetailResponse>>> getAllCommentsByPostId(
       @RequestParam Long postId) {
 

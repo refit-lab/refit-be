@@ -48,6 +48,10 @@ public class Post extends BaseTimeEntity {
   @Column(nullable = false)
   private String content;
 
+  @Column(nullable = false)
+  @Builder.Default
+  private Long views = 0L;
+
   @ElementCollection
   @CollectionTable(name = "post_category", joinColumns = @JoinColumn(name = "post_id"))
   @Column(nullable = false)
@@ -74,5 +78,9 @@ public class Post extends BaseTimeEntity {
     this.title = title;
     this.content = content;
     this.imageUrlList = imageUrlList;
+  }
+
+  public void increaseViews() {
+    this.views += 1L;
   }
 }

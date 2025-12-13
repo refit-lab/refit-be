@@ -27,6 +27,9 @@ public class PostDetailResponse {
   @Schema(description = "게시글 내용", example = "처음 가보는거라 질문 드립니다 ㅠㅠ")
   private String content;
 
+  @Schema(description = "게시글 조회수", example = "100")
+  private Long views;
+
   @Schema(description = "게시글 작성 시간", example = "2025-12-03T14:37:17")
   private LocalDateTime createdAt;
 
