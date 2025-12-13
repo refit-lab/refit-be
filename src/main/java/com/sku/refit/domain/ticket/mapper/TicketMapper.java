@@ -3,6 +3,7 @@
  */
 package com.sku.refit.domain.ticket.mapper;
 
+import com.sku.refit.domain.ticket.entity.TicketType;
 import org.springframework.stereotype.Component;
 
 import com.sku.refit.domain.ticket.dto.request.TicketRequest.IssueTicketRequest;
@@ -19,16 +20,15 @@ public class TicketMapper {
   private final TicketQrPayloadFactory qrPayloadFactory;
 
   /** 발급 요청 + userId + token -> Ticket 엔티티 */
-  public Ticket toEntity(IssueTicketRequest request, Long userId, String token) {
+  public Ticket toEntity(TicketType type, Long targetId, Long userId, String token) {
     return Ticket.builder()
-        .type(request.getType())
-        .targetId(request.getTargetId())
+        .type(type)
+        .targetId(targetId)
         .userId(userId)
         .token(token)
         .build();
   }
 
-  /** 발급 응답 */
   public TicketDetailResponse toDetail(Ticket ticket) {
     return TicketDetailResponse.builder()
         .ticketId(ticket.getId())

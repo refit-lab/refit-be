@@ -3,6 +3,7 @@
  */
 package com.sku.refit.domain.ticket.service;
 
+import com.sku.refit.domain.ticket.entity.TicketType;
 import java.util.List;
 
 import com.sku.refit.domain.ticket.dto.request.TicketRequest.*;
@@ -38,7 +39,7 @@ public interface TicketService {
    * @param request 티켓 발급 요청 정보 (티켓 타입, 대상 ID, 발급 대상 사용자)
    * @return 발급된 티켓 상세 정보 (type, targetId, token, 발급 시각 등)
    */
-  TicketDetailResponse issueTicket(IssueTicketRequest request);
+  TicketDetailResponse issueTicket(TicketType type, Long targetId, Long userId);
 
   /* =========================
    * Verify

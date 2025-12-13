@@ -27,7 +27,7 @@ public interface TicketController {
       @RequestBody @Valid IssueTicketRequest request);
 
   @PostMapping("/admin/verify")
-  @Operation(summary = "[개발자] 티켓 검증", description = "token으로 티켓 유효/사용 여부를 확인합니다. (사용 처리 X)")
+  @Operation(summary = "[관리자] 티켓 검증", description = "token으로 티켓 유효/사용 여부를 확인합니다. (사용 처리 X)")
   ResponseEntity<BaseResponse<VerifyTicketResponse>> verifyTicket(
       @RequestBody @Valid VerifyTicketRequest request);
 

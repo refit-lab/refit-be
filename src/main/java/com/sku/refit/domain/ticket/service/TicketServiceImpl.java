@@ -42,23 +42,29 @@ public class TicketServiceImpl implements TicketService {
 
   @Override
   @Transactional
-  public TicketDetailResponse issueTicket(IssueTicketRequest request) {
+  public TicketDetailResponse issueTicket(TicketType type, Long targetId, Long userId) {
 
-    validateIssueRequest(request);
+    if (type == null || targetId == null) {
+      throw new CustomException(TicketErrorCode.TICKET_BAD_REQUEST);
+    }
 
-    User user = userService.getCurrentUser();
-    Long userId = user.getId();
+    Long issueUserId;
+    if (userId != null) {
+      issueUserId = userId;
+    } else {
+      issueUserId = userService.getCurrentUser().getId();
+    }
 
     String token;
     try {
       token = tokenGenerator.generate();
     } catch (Exception e) {
-      log.error("[TICKET] issueTicket - token generation failed, userId={}", userId, e);
+      log.error("[TICKET] issueTicket - token generation failed, userId={}", issueUserId, e);
       throw new CustomException(TicketErrorCode.TICKET_TOKEN_GENERATION_FAILED);
     }
 
     try {
-      Ticket ticket = ticketMapper.toEntity(request, userId, token);
+      Ticket ticket = ticketMapper.toEntity(type, targetId, issueUserId, token);
       Ticket saved = ticketRepository.save(ticket);
       return ticketMapper.toDetail(saved);
 
@@ -67,14 +73,11 @@ public class TicketServiceImpl implements TicketService {
     } catch (Exception e) {
       log.error(
           "[TICKET] issueTicket - save failed, userId={}, type={}, targetId={}",
-          userId,
-          request.getType(),
-          request.getTargetId(),
-          e);
+          issueUserId, type, targetId, e
+      );
       throw new CustomException(TicketErrorCode.TICKET_ISSUE_FAILED);
     }
   }
-
   /* =========================
    * Verify
    * ========================= */
@@ -86,7 +89,7 @@ public class TicketServiceImpl implements TicketService {
 
     try {
       return ticketRepository
-          .findByToken(request.getToken())
+          .findByTokenForUpdate(request.getToken())
           .map(ticketMapper::toVerifyFound)
           .orElseGet(ticketMapper::toVerifyNotFound);
 
@@ -117,7 +120,7 @@ public class TicketServiceImpl implements TicketService {
       boolean alreadyUsed = ticket.isUsed();
 
       if (!alreadyUsed) {
-        ticket.consume(LocalDateTime.now()); // 멱등 처리
+        ticket.consume(LocalDateTime.now());
       }
 
       return ticketMapper.toConsume(ticket, !alreadyUsed);

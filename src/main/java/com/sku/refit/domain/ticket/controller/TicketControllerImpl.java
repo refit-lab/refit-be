@@ -27,7 +27,11 @@ public class TicketControllerImpl implements TicketController {
   @Override
   public ResponseEntity<BaseResponse<TicketDetailResponse>> issueTicket(
       @RequestBody @Valid IssueTicketRequest request) {
-    return ResponseEntity.ok(BaseResponse.success(ticketService.issueTicket(request)));
+    return ResponseEntity.ok(
+        BaseResponse.success(
+            ticketService.issueTicket(request.getType(), request.getTargetId(), request.getUserId())
+        )
+    );
   }
 
   @Override
