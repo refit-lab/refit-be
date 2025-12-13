@@ -1,8 +1,9 @@
-/*
- * Copyright (c) SKU 다시입을Lab
+/* 
+ * Copyright (c) SKU 다시입을Lab 
  */
 package com.sku.refit.domain.ticket.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.sku.refit.domain.ticket.entity.TicketType;
@@ -23,7 +24,7 @@ public class TicketResponse {
 
     private LocalDateTime issuedAt;
     private LocalDateTime usedAt;
-    private LocalDateTime expiresAt;
+    private LocalDate expiresAt;
   }
 
   @Getter
@@ -40,7 +41,7 @@ public class TicketResponse {
 
     private LocalDateTime issuedAt;
     private LocalDateTime usedAt;
-    private LocalDateTime expiresAt;
+    private LocalDate expiresAt;
   }
 
   @Getter
@@ -55,7 +56,7 @@ public class TicketResponse {
     private String qrPayload;
 
     private LocalDateTime usedAt;
-    private LocalDateTime expiresAt;
+    private LocalDate expiresAt;
   }
 
   @Getter
@@ -70,6 +71,6 @@ public class TicketResponse {
 
     private LocalDateTime issuedAt;
     private LocalDateTime usedAt;
-    private LocalDateTime expiresAt;
+    private LocalDate expiresAt;
   }
 }

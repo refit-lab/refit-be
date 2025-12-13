@@ -1,9 +1,9 @@
-/*
- * Copyright (c) SKU 다시입을Lab
+/* 
+ * Copyright (c) SKU 다시입을Lab 
  */
 package com.sku.refit.domain.ticket.mapper;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.springframework.stereotype.Component;
 
@@ -27,7 +27,7 @@ public class TicketMapper {
 
   /** 발급 요청 + userId + token + expiresAt -> Ticket 엔티티 */
   public Ticket toEntity(
-      TicketType type, Long targetId, Long userId, String token, LocalDateTime expiresAt) {
+      TicketType type, Long targetId, Long userId, String token, LocalDate expiresAt) {
 
     return Ticket.builder()
         .type(type)
@@ -68,8 +68,8 @@ public class TicketMapper {
   /** 검증 응답: 만료된 티켓 */
   public VerifyTicketResponse toVerifyExpired(Ticket ticket) {
     return VerifyTicketResponse.builder()
-        .valid(false)                 // 만료 → 유효하지 않음
-        .used(false)                  // 사용 불가 상태
+        .valid(false) // 만료 → 유효하지 않음
+        .used(false) // 사용 불가 상태
         .ticketId(ticket.getId())
         .type(ticket.getType())
         .targetId(ticket.getTargetId())

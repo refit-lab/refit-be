@@ -3,6 +3,7 @@
  */
 package com.sku.refit.domain.ticket.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,7 +42,8 @@ public class TicketServiceImpl implements TicketService {
 
   @Override
   @Transactional
-  public TicketDetailResponse issueTicket(TicketType type, Long targetId, Long userId,  LocalDateTime expiresAt) {
+  public TicketDetailResponse issueTicket(
+      TicketType type, Long targetId, Long userId, LocalDate expiresAt) {
 
     if (type == null || targetId == null) {
       throw new CustomException(TicketErrorCode.TICKET_BAD_REQUEST);
@@ -88,17 +90,18 @@ public class TicketServiceImpl implements TicketService {
   public VerifyTicketResponse verifyTicket(VerifyTicketRequest request) {
 
     validateToken(request.getToken());
-    LocalDateTime now = LocalDateTime.now();
+    LocalDate today = LocalDate.now();
 
     try {
       return ticketRepository
           .findByTokenForUpdate(request.getToken())
-          .map(ticket -> {
-            if (ticket.isExpired(now)) {
-              return ticketMapper.toVerifyExpired(ticket);
-            }
-            return ticketMapper.toVerifyFound(ticket);
-          })
+          .map(
+              ticket -> {
+                if (ticket.isExpired(today)) {
+                  return ticketMapper.toVerifyExpired(ticket);
+                }
+                return ticketMapper.toVerifyFound(ticket);
+              })
           .orElseGet(ticketMapper::toVerifyNotFound);
 
     } catch (CustomException e) {
@@ -193,7 +196,6 @@ public class TicketServiceImpl implements TicketService {
   /* =========================
    * Private
    * ========================= */
-
 
   private void validateToken(String token) {
     if (token == null || token.isBlank()) {

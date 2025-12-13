@@ -3,12 +3,13 @@
  */
 package com.sku.refit.domain.ticket.dto.request;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import com.sku.refit.domain.ticket.entity.TicketType;
 
-import java.time.LocalDateTime;
 import lombok.*;
 
 public class TicketRequest {
@@ -21,7 +22,7 @@ public class TicketRequest {
     @NotNull private Long targetId;
 
     private Long userId;
-    private LocalDateTime expiresAt;
+    private LocalDate expiresAt;
   }
 
   @Getter
