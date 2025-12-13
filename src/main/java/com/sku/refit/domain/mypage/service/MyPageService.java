@@ -55,4 +55,21 @@ public interface MyPageService {
    * @return 내가 작성한 게시글 무한 스크롤 응답
    */
   InfiniteResponse<PostDetailResponse> getMyPosts(Long lastPostId, Integer size);
+
+  /**
+   * 마이페이지 홈 정보를 조회합니다.
+   *
+   * <p>로그인 여부에 따라 다음 정보를 반환합니다.
+   *
+   * <ul>
+   *   <li>비로그인: 로그인 여부만 반환
+   *   <li>로그인: 사용자 정보, 교환 횟수, 총 탄소 절감량, 탄소량 변경 이력 목록
+   * </ul>
+   *
+   * @return 마이페이지 홈 응답
+   */
+  MyHomeResponse getMyHome();
+
+  /** 교환 확정 시 호출: 탄소량 +20g, 교환횟수 +1, 이력 기록 */
+  void addExchangeCarbon();
 }

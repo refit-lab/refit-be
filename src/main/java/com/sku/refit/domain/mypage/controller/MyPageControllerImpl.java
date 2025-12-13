@@ -38,4 +38,9 @@ public class MyPageControllerImpl implements MyPageController {
 
     return ResponseEntity.ok(BaseResponse.success(myPageService.getMyPosts(lastPostId, size)));
   }
+
+  @Override
+  public ResponseEntity<BaseResponse<MyHomeResponse>> getMyHome() {
+    return ResponseEntity.ok(BaseResponse.success(myPageService.getMyHome()));
+  }
 }

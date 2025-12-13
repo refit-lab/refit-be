@@ -74,4 +74,18 @@ public interface MyPageController {
           Long lastPostId,
       @Parameter(description = "한 번에 조회할 게시글 개수", example = "10") @RequestParam(defaultValue = "10")
           Integer size);
+
+  @GetMapping
+  @Operation(
+      summary = "마이페이지 홈 조회",
+      description =
+          """
+          마이페이지 홈에 필요한 정보를 조회합니다.
+
+          로그인 여부, 사용자 정보, 교환 횟수, 총 누적 탄소 절감량과
+          탄소량 변경 이력[변경 시각, 변경 후 누적량, 변경량]을 반환합니다. (과거 → 최신순)
+
+          해당 이력 데이터는 그래프 시각화 용도로 사용됩니다.
+          """)
+  ResponseEntity<BaseResponse<MyHomeResponse>> getMyHome();
 }

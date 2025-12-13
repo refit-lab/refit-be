@@ -56,6 +56,21 @@ public class User extends BaseTimeEntity {
   @Builder.Default
   private Role role = Role.ROLE_USER;
 
+  @Column(name = "exchange_count", nullable = false)
+  @Builder.Default
+  private Integer exchangeCount = 0;
+
+  @Column(name = "total_reduced_carbon_g", nullable = false)
+  @Builder.Default
+  private Long totalReducedCarbonG = 0L;
+
+  public void addExchangeCarbon(long deltaG) {
+    if (deltaG <= 0) return;
+    this.exchangeCount = (this.exchangeCount == null ? 0 : this.exchangeCount) + 1;
+    this.totalReducedCarbonG =
+        (this.totalReducedCarbonG == null ? 0L : this.totalReducedCarbonG) + deltaG;
+  }
+
   public static User fromOAuth(String email, String nickname, String profileImageUrl) {
     return User.builder()
         .username(email)
