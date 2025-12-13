@@ -32,6 +32,12 @@ public class PostDetailResponse {
   @Schema(description = "게시글 조회수", example = "100")
   private Long views;
 
+  @Schema(description = "게시글 좋아요수", example = "100")
+  private Long likes;
+
+  @Schema(description = "게시글 댓글수", example = "100")
+  private Long comments;
+
   @Schema(description = "게시글 작성 시간", example = "2025-12-03T14:37:17")
   private LocalDateTime createdAt;
 
@@ -40,6 +46,9 @@ public class PostDetailResponse {
 
   @Schema(description = "작성자 본인 여부", example = "true")
   private Boolean isAuthor;
+
+  @Schema(description = "내가 좋아요를 눌렀는지 여부", example = "true")
+  private Boolean isLiked;
 
   @Schema(description = "이미지 URL 리스트")
   private List<String> imageUrlList;

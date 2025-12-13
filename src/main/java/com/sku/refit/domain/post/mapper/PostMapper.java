@@ -29,16 +29,20 @@ public class PostMapper {
         .build();
   }
 
-  public PostDetailResponse toDetailResponse(Post post, User user) {
+  public PostDetailResponse toDetailResponse(
+      Post post, Long likeCount, Boolean isLiked, User user) {
 
     return PostDetailResponse.builder()
         .postId(post.getId())
         .title(post.getTitle())
         .content(post.getContent())
         .views(post.getViews())
+        .likes(likeCount)
+        .comments((long) post.getCommentList().size())
         .createdAt(post.getCreatedAt())
         .nickname(post.getUser().getNickname())
         .isAuthor(user != null && post.getUser().getUsername().equals(user.getUsername()))
+        .isLiked(isLiked)
         .category(post.getPostCategory())
         .commentIdList(post.getCommentList().stream().map(Comment::getId).toList())
         .build();
