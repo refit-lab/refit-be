@@ -14,7 +14,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum MyPageErrorCode implements BaseErrorCode {
   TICKETS_FETCH_FAILED("MYPAGE001", "티켓 목록 조회에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-  JOINED_EVENTS_FETCH_FAILED("MYPAGE002", "참여한 행사 조회에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+  JOINED_EVENTS_FETCH_FAILED("MYPAGE002", "참여한 행사 조회에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+  MY_POSTS_FETCH_FAILED("MYPAGE003", "내가 작성한 글 조회에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
   private final String code;
   private final String message;
