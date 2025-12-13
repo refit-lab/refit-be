@@ -59,6 +59,9 @@ public class CommentServiceImpl implements CommentService {
           commentRepository
               .findById(request.getParentCommentId())
               .orElseThrow(() -> new CustomException(CommentErrorCode.COMMENT_NOT_FOUND));
+      if (!parent.getPost().getId().equals(postId)) {
+        throw new CustomException(CommentErrorCode.COMMENT_NOT_FOUND);
+      }
     }
 
     Comment comment = commentMapper.toComment(request, parent, user, post);
