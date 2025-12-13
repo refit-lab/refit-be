@@ -37,10 +37,10 @@ public interface TicketController {
       @RequestBody @Valid ConsumeTicketRequest request);
 
   @GetMapping("/my/events")
-  @Operation(summary = "참가한 행사 조회", description = "사용자가 사용한 EVENT 티켓만 조회합니다.")
+  @Operation(summary = "[개발자] 참가한 행사 티켓 조회", description = "사용자가 사용한 EVENT 티켓만 조회합니다.")
   ResponseEntity<BaseResponse<List<MyTicketItemResponse>>> getMyUsedEventTickets();
 
   @GetMapping("/my/cloth")
-  @Operation(summary = "교환 내역 조회", description = "사용자가 받았던 CLOTH 티켓을 모두 조회합니다.")
+  @Operation(summary = "[개발자] 교환 내역 티켓 조회", description = "사용자가 받았던 CLOTH 티켓을 모두 조회합니다.")
   ResponseEntity<BaseResponse<List<MyTicketItemResponse>>> getMyClothTickets();
 }
