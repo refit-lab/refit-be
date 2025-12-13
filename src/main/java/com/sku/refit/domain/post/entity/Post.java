@@ -50,7 +50,7 @@ public class Post extends BaseTimeEntity {
 
   @Column(nullable = false)
   @Builder.Default
-  private Integer views = 0;
+  private Long views = 0L;
 
   @ElementCollection
   @CollectionTable(name = "post_category", joinColumns = @JoinColumn(name = "post_id"))
@@ -81,6 +81,6 @@ public class Post extends BaseTimeEntity {
   }
 
   public void increaseViews() {
-    this.views += 1;
+    this.views += 1L;
   }
 }

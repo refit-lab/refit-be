@@ -59,6 +59,12 @@ public class PostServiceImpl implements PostService {
     Post post = postMapper.toPost(request, imageUrlList, user);
     postRepository.save(post);
 
+    log.info(
+        "[POST CREATE] postId={}, userId={}, imageCount={}",
+        post.getId(),
+        user.getId(),
+        imageUrlList.size());
+
     return postMapper.toDetailResponse(post, user);
   }
 
@@ -68,6 +74,8 @@ public class PostServiceImpl implements PostService {
 
     User user = userService.getCurrentUser();
     List<Post> posts = postRepository.findAll();
+
+    log.info("[POST LIST] userId={}, postCount={}", user.getId(), posts.size());
 
     return posts.stream().map(post -> postMapper.toDetailResponse(post, user)).toList();
   }
@@ -101,11 +109,14 @@ public class PostServiceImpl implements PostService {
 
     Long newLastCursor = posts.isEmpty() ? null : posts.getLast().getId();
 
+    log.info(
+        "[POST CATEGORY LIST] category={}, lastPostId={}, size={}", category, lastPostId, size);
+
     return infiniteMapper.toInfiniteResponse(postResponseList, newLastCursor, hasNext, size);
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public PostDetailResponse getPostById(Long id) {
 
     User user = userService.getCurrentUser();
@@ -115,6 +126,14 @@ public class PostServiceImpl implements PostService {
             .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
 
     post.increaseViews();
+
+    post.increaseViews();
+
+    log.info(
+        "[POST DETAIL] postId={}, userId={}, views={}",
+        post.getId(),
+        user.getId(),
+        post.getViews());
 
     return postMapper.toDetailResponse(post, user);
   }
@@ -164,6 +183,8 @@ public class PostServiceImpl implements PostService {
 
     post.update(request.getTitle(), request.getContent(), newImageUrls);
 
+    log.info("[POST UPDATE COMPLETE] postId={}, userId={}", post.getId(), user.getId());
+
     return postMapper.toDetailResponse(post, user);
   }
 
@@ -184,6 +205,8 @@ public class PostServiceImpl implements PostService {
     for (String imageUrl : post.getImageUrlList()) {
       s3Service.deleteFile(s3Service.extractKeyNameFromUrl(imageUrl));
     }
+
+    log.info("[POST DELETE COMPLETE] postId={}, userId={}", post.getId(), user.getId());
 
     postRepository.delete(post);
   }

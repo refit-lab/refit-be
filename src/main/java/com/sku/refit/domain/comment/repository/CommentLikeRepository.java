@@ -9,13 +9,12 @@ import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.sku.refit.domain.comment.entity.Comment;
 import com.sku.refit.domain.comment.entity.CommentLike;
 import com.sku.refit.domain.user.entity.User;
-
-import io.lettuce.core.dynamic.annotation.Param;
 
 @Repository
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> {

@@ -33,6 +33,7 @@ public class PostMapper {
         .postId(post.getId())
         .title(post.getTitle())
         .content(post.getContent())
+        .views(post.getViews())
         .createdAt(post.getCreatedAt())
         .nickname(user.getNickname())
         .categoryList(post.getCategoryList())

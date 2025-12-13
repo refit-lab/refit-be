@@ -65,6 +65,13 @@ public class CommentServiceImpl implements CommentService {
 
     commentRepository.save(comment);
 
+    log.info(
+        "[COMMENT CREATE] commentId={}, postId={}, userId={}, parentId={}",
+        comment.getId(),
+        postId,
+        user.getId(),
+        parent != null ? parent.getId() : null);
+
     return commentMapper.toDetailResponse(comment, user, 0L, false, new ArrayList<>());
   }
 
@@ -148,9 +155,16 @@ public class CommentServiceImpl implements CommentService {
       if (comment.getParent() == null) {
         result.add(response);
       } else {
-        responseMap.get(comment.getParent().getId()).getReplies().add(response);
+        CommentDetailResponse parentResponse = responseMap.get(comment.getParent().getId());
+        if (parentResponse != null) {
+          parentResponse.getReplies().add(response);
+        } else {
+          result.add(response);
+        }
       }
     }
+
+    log.info("[COMMENT LIST] postId={}, commentCount={}", postId, comments.size());
 
     return result;
   }
@@ -174,6 +188,8 @@ public class CommentServiceImpl implements CommentService {
     long likeCount = commentLikeRepository.countByComment(comment);
     boolean isLiked = commentLikeRepository.existsByCommentAndUser(comment, user);
 
+    log.info("[COMMENT UPDATE] commentId={}, userId={}", comment.getId(), user.getId());
+
     return commentMapper.toDetailResponse(comment, user, likeCount, isLiked, new ArrayList<>());
   }
 
@@ -193,6 +209,12 @@ public class CommentServiceImpl implements CommentService {
 
     Post post = comment.getPost();
     post.getCommentList().remove(comment);
+
+    log.info(
+        "[COMMENT DELETE] commentId={}, postId={}, userId={}",
+        comment.getId(),
+        comment.getPost().getId(),
+        user.getId());
 
     commentRepository.delete(comment);
   }
