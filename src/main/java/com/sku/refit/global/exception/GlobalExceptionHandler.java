@@ -10,10 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.sku.refit.global.exception.model.BaseErrorCode;
 import com.sku.refit.global.response.BaseResponse;
+import com.sku.refit.global.s3.exception.S3ErrorStatus;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -91,5 +93,17 @@ public class GlobalExceptionHandler {
     log.error("Server 오류 발생", ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(BaseResponse.error(500, "예상치 못한 서버 오류가 발생했습니다."));
+  }
+
+  /** 파일 업로드 크기 초과 예외 처리 Multipart 요청에서 파일이 5MB 이상일 경우 발생합니다. */
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ResponseEntity<BaseResponse<Object>> handleMaxUploadSizeExceededException(
+      MaxUploadSizeExceededException ex) {
+    log.warn("파일 용량 초과: {}", ex.getMessage());
+    return ResponseEntity.status(S3ErrorStatus.FILE_SIZE_INVALID.getStatus())
+        .body(
+            BaseResponse.error(
+                S3ErrorStatus.FILE_SIZE_INVALID.getStatus().value(),
+                S3ErrorStatus.FILE_SIZE_INVALID.getMessage()));
   }
 }
