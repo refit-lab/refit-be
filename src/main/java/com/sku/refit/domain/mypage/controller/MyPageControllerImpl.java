@@ -26,12 +26,14 @@ public class MyPageControllerImpl implements MyPageController {
   }
 
   @Override
-  public ResponseEntity<BaseResponse<JoinedEventsResponse>> getJoinedEvents(int page, int size) {
+  public ResponseEntity<BaseResponse<JoinedEventsResponse>> getJoinedEvents(
+      @RequestParam int page, @RequestParam int size) {
     return ResponseEntity.ok(BaseResponse.success(myPageService.getJoinedEvents(page, size)));
   }
 
   @Override
-  public ResponseEntity<BaseResponse<MyPostsResponse>> getMyPosts(int page, int size) {
+  public ResponseEntity<BaseResponse<MyPostsResponse>> getMyPosts(
+      @RequestParam int page, @RequestParam int size) {
     return ResponseEntity.ok(BaseResponse.success(myPageService.getMyPosts(page, size)));
   }
 

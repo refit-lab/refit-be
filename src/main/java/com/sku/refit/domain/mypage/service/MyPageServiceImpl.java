@@ -90,6 +90,7 @@ public class MyPageServiceImpl implements MyPageService {
     }
   }
 
+  @Override
   public JoinedEventsResponse getJoinedEvents(int page, int size) {
     Long userId = userService.getCurrentUser().getId();
 
