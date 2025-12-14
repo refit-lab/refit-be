@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -123,6 +124,17 @@ public class SecurityConfig {
                     "/api/auths/test-login",
                     "/actuator/health")
                 .permitAll()
+
+                // 행사 + 마이페이지
+                .requestMatchers(HttpMethod.GET,
+                    "/api/events/{id}",
+                    "/api/events/{id}/img",
+                    "/api/events/upcoming",
+                    "/api/events/group",
+                    "/api/events/ended",
+                    "/api/my"
+                ).permitAll()
+
                 .requestMatchers("/error")
                 .permitAll()
                 .requestMatchers(RegexRequestMatcher.regexMatcher(".*/admin($|/.*)"))

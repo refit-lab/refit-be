@@ -80,8 +80,9 @@ public class EventMapper {
         .eventId(event.getId())
         .thumbnailUrl(event.getThumbnailUrl())
         .name(event.getName())
-        .startDate(event.getStartDate()) // DTO 스펙에 맞춤
+        .startDate(event.getStartDate())
         .location(event.getLocation())
+        .description(event.getDescription())
         .build();
   }
 

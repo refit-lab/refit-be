@@ -137,6 +137,9 @@ public class EventResponse {
 
     @Schema(description = "행사 장소", example = "서울 성동구")
     private String location;
+
+    @Schema(description = "설명", example = "따뜻한 겨울을 위한 의류 기부 행사입니다.")
+    private String description;
   }
 
   @Getter
