@@ -12,11 +12,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.sku.refit.domain.event.entity.Event;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-  List<Event> findByDateGreaterThanEqualOrderByDateAsc(LocalDate today);
 
-  List<Event> findByDateLessThanOrderByDateDesc(LocalDate today);
+  List<Event> findByStartDateGreaterThanEqualOrderByStartDateAsc(LocalDate today);
 
-  List<Event> findByDateGreaterThanEqualOrderByDateAsc(LocalDate date, Pageable pageable);
+  List<Event> findByEndDateLessThanOrderByEndDateDesc(LocalDate today);
 
-  List<Event> findByDateLessThanOrderByDateDesc(LocalDate date, Pageable pageable);
+  List<Event> findByStartDateGreaterThanEqualOrderByStartDateAsc(
+      LocalDate today, Pageable pageable);
+
+  List<Event> findByEndDateLessThanOrderByEndDateDesc(LocalDate today, Pageable pageable);
 }

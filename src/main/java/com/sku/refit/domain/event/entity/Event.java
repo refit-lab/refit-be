@@ -33,8 +33,11 @@ public class Event extends BaseTimeEntity {
   @Column(nullable = false, columnDefinition = "TEXT")
   private String description;
 
-  @Column(nullable = false)
-  private LocalDate date;
+  @Column(name = "start_date", nullable = false)
+  private LocalDate startDate;
+
+  @Column(name = "end_date", nullable = false)
+  private LocalDate endDate;
 
   @Column(nullable = false)
   private String location;
@@ -48,13 +51,23 @@ public class Event extends BaseTimeEntity {
   @Builder.Default
   private Integer totalReservedCount = 0;
 
+  @Column private Integer capacity;
+
   public void update(
-      String name, String description, LocalDate date, String location, String detailLink) {
+      String name,
+      String description,
+      LocalDate startDate,
+      LocalDate endDate,
+      String location,
+      String detailLink,
+      Integer capacity) {
     this.name = name;
     this.description = description;
-    this.date = date;
+    this.startDate = startDate;
+    this.endDate = endDate;
     this.location = location;
     this.detailLink = detailLink;
+    this.capacity = capacity;
   }
 
   public void updateThumbnailUrl(String thumbnailUrl) {
@@ -63,5 +76,11 @@ public class Event extends BaseTimeEntity {
 
   public void increaseReservedCount() {
     this.totalReservedCount = (this.totalReservedCount == null ? 0 : this.totalReservedCount) + 1;
+  }
+
+  public boolean isFull() {
+    if (this.capacity == null) return false;
+    int current = (this.totalReservedCount == null) ? 0 : this.totalReservedCount;
+    return current >= this.capacity;
   }
 }

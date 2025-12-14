@@ -25,7 +25,7 @@ public class EventResponse {
     @Schema(description = "행사 식별자", example = "1")
     private Long eventId;
 
-    @Schema(description = "누적 예약 인원(옷 수량 기준)", example = "25")
+    @Schema(description = "누적 예약 인원", example = "25")
     private Integer totalReservedCount;
 
     @Schema(description = "행사 대표 이미지 URL")
@@ -42,11 +42,17 @@ public class EventResponse {
 
     /* ===== 중간 ===== */
 
-    @Schema(description = "행사 날짜", example = "2025-12-24")
-    private LocalDate date;
+    @Schema(description = "시작 날짜", example = "2025-12-24")
+    private LocalDate startDate;
+
+    @Schema(description = "종료 날짜", example = "2025-12-26")
+    private LocalDate endDate;
 
     @Schema(description = "행사 장소", example = "서울 성동구")
     private String location;
+
+    @Schema(description = "예약 정원", example = "100")
+    private Integer capacity;
 
     /* ===== 하단 ===== */
 
@@ -106,9 +112,6 @@ public class EventResponse {
     @Schema(description = "행사 설명", example = "따뜻한 겨울을 위한 의류 기부 행사입니다.")
     private String description;
 
-    @Schema(description = "행사 날짜", example = "2025-12-24")
-    private LocalDate date;
-
     @Schema(description = "행사 장소", example = "서울 성동구")
     private String location;
   }
@@ -127,8 +130,8 @@ public class EventResponse {
     @Schema(description = "행사명", example = "겨울 의류 나눔 행사")
     private String name;
 
-    @Schema(description = "행사 날짜", example = "2025-12-24")
-    private LocalDate date;
+    @Schema(description = "시작 날짜", example = "2025-12-24")
+    private LocalDate startDate;
 
     @Schema(description = "행사 장소", example = "서울 성동구")
     private String location;

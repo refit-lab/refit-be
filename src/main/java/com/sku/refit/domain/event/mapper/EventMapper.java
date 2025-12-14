@@ -23,10 +23,12 @@ public class EventMapper {
     return Event.builder()
         .name(req.getName())
         .description(req.getDescription())
-        .date(req.getDate())
+        .startDate(req.getStartDate())
+        .endDate(req.getEndDate())
         .location(req.getLocation())
         .detailLink(req.getDetailLink())
         .thumbnailUrl(thumbnailUrl)
+        .capacity(req.getCapacity()) // null 허용
         .totalReservedCount(0)
         .build();
   }
@@ -41,8 +43,10 @@ public class EventMapper {
         .name(event.getName())
         .description(event.getDescription())
         .detailLink(event.getDetailLink())
-        .date(event.getDate())
+        .startDate(event.getStartDate())
+        .endDate(event.getEndDate())
         .location(event.getLocation())
+        .capacity(event.getCapacity())
         .recentImageUrlList(recent4)
         .clothCountExceptRecent4(clothCountExcept4)
         .build();
@@ -57,14 +61,14 @@ public class EventMapper {
    * ========================= */
 
   public EventCardResponse toUpcomingCard(Event event, LocalDate today) {
-    long dday = ChronoUnit.DAYS.between(today, event.getDate());
+    long dday = ChronoUnit.DAYS.between(today, event.getStartDate());
+
     return EventCardResponse.builder()
         .eventId(event.getId())
         .thumbnailUrl(event.getThumbnailUrl())
         .dday(dday)
         .name(event.getName())
         .description(event.getDescription())
-        .date(event.getDate())
         .location(event.getLocation())
         .build();
   }
@@ -74,7 +78,7 @@ public class EventMapper {
         .eventId(event.getId())
         .thumbnailUrl(event.getThumbnailUrl())
         .name(event.getName())
-        .date(event.getDate())
+        .startDate(event.getStartDate()) // DTO 스펙에 맞춤
         .location(event.getLocation())
         .build();
   }
@@ -99,6 +103,7 @@ public class EventMapper {
   /* =========================
    * Reservation Response
    * ========================= */
+
   public EventReservation toReservation(Event event, User user, EventRsvRequest request) {
     return EventReservation.builder()
         .event(event)

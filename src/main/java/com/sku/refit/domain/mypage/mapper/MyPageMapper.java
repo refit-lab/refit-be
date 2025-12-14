@@ -96,7 +96,7 @@ public class MyPageMapper {
         .thumbnailUrl(event.getThumbnailUrl())
         .name(event.getName())
         .description(event.getDescription())
-        .date(event.getDate())
+        .date(event.getStartDate())
         .location(event.getLocation())
         .build();
   }

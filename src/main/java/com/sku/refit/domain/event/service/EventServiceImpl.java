@@ -11,8 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sku.refit.domain.event.dto.request.EventRequest.*;
-import com.sku.refit.domain.event.dto.response.EventResponse.*;
+import com.sku.refit.domain.event.dto.request.EventRequest.EventInfoRequest;
+import com.sku.refit.domain.event.dto.request.EventRequest.EventRsvRequest;
+import com.sku.refit.domain.event.dto.response.EventResponse.EventCardResponse;
+import com.sku.refit.domain.event.dto.response.EventResponse.EventDetailResponse;
+import com.sku.refit.domain.event.dto.response.EventResponse.EventGroupResponse;
+import com.sku.refit.domain.event.dto.response.EventResponse.EventImageResponse;
+import com.sku.refit.domain.event.dto.response.EventResponse.EventReservationResponse;
+import com.sku.refit.domain.event.dto.response.EventResponse.EventSimpleResponse;
 import com.sku.refit.domain.event.entity.Event;
 import com.sku.refit.domain.event.entity.EventReservation;
 import com.sku.refit.domain.event.entity.EventReservationImage;
@@ -55,11 +61,13 @@ public class EventServiceImpl implements EventService {
   @Transactional
   public EventDetailResponse createEvent(EventInfoRequest request, MultipartFile thumbnail) {
 
+    validateEventInfoRequest(request);
+
     if (thumbnail == null || thumbnail.isEmpty()) {
       throw new CustomException(EventErrorCode.EVENT_THUMBNAIL_REQUIRED);
     }
 
-    String thumbnailUrl;
+    final String thumbnailUrl;
     try {
       thumbnailUrl = s3Service.uploadFileAsWebp(PathName.EVENT, thumbnail);
     } catch (CustomException e) {
@@ -73,7 +81,6 @@ public class EventServiceImpl implements EventService {
       Event event = eventMapper.toEvent(request, thumbnailUrl);
       eventRepository.save(event);
       return getEventDetail(event.getId());
-
     } catch (CustomException e) {
       throw e;
     } catch (Exception e) {
@@ -87,6 +94,8 @@ public class EventServiceImpl implements EventService {
   public EventDetailResponse updateEvent(
       Long id, EventInfoRequest request, MultipartFile thumbnail) {
 
+    validateEventInfoRequest(request);
+
     Event event =
         eventRepository
             .findById(id)
@@ -96,16 +105,17 @@ public class EventServiceImpl implements EventService {
       event.update(
           request.getName(),
           request.getDescription(),
-          request.getDate(),
+          request.getStartDate(),
+          request.getEndDate(),
           request.getLocation(),
-          request.getDetailLink());
+          request.getDetailLink(),
+          request.getCapacity());
 
       if (thumbnail != null && !thumbnail.isEmpty()) {
         replaceThumbnail(event, id, thumbnail);
       }
 
       return getEventDetail(event.getId());
-
     } catch (CustomException e) {
       throw e;
     } catch (Exception e) {
@@ -115,6 +125,7 @@ public class EventServiceImpl implements EventService {
   }
 
   private void replaceThumbnail(Event event, Long eventId, MultipartFile thumbnail) {
+
     String oldThumbUrl = event.getThumbnailUrl();
 
     final String newThumbUrl;
@@ -157,6 +168,7 @@ public class EventServiceImpl implements EventService {
           throw new CustomException(EventErrorCode.EVENT_THUMBNAIL_DELETE_FAILED);
         }
       }
+
       List<EventReservationImage> images =
           eventReservationImageRepository.findAllByReservation_Event_IdOrderByIdDesc(id);
 
@@ -198,7 +210,9 @@ public class EventServiceImpl implements EventService {
   public List<EventCardResponse> getUpcomingEvents() {
 
     LocalDate today = LocalDate.now();
-    List<Event> upcoming = eventRepository.findByDateGreaterThanEqualOrderByDateAsc(today);
+
+    List<Event> upcoming =
+        eventRepository.findByStartDateGreaterThanEqualOrderByStartDateAsc(today);
 
     return eventMapper.toUpcomingCardList(upcoming, today);
   }
@@ -207,23 +221,28 @@ public class EventServiceImpl implements EventService {
   public List<EventSimpleResponse> getEndedEvents() {
 
     LocalDate today = LocalDate.now();
-    List<Event> ended = eventRepository.findByDateLessThanOrderByDateDesc(today);
+
+    List<Event> ended = eventRepository.findByEndDateLessThanOrderByEndDateDesc(today);
 
     return eventMapper.toSimpleList(ended);
   }
 
   @Override
   public EventGroupResponse getEventGroups() {
+
     LocalDate today = LocalDate.now();
 
     List<Event> top2Upcoming =
-        eventRepository.findByDateGreaterThanEqualOrderByDateAsc(today, PageRequest.of(0, 2));
+        eventRepository.findByStartDateGreaterThanEqualOrderByStartDateAsc(
+            today, PageRequest.of(0, 2));
 
     Event upcomingEvent = top2Upcoming.size() >= 1 ? top2Upcoming.get(0) : null;
     Event scheduledEvent = top2Upcoming.size() >= 2 ? top2Upcoming.get(1) : null;
 
     Event endedEvent =
-        eventRepository.findByDateLessThanOrderByDateDesc(today, PageRequest.of(0, 1)).stream()
+        eventRepository
+            .findByEndDateLessThanOrderByEndDateDesc(today, PageRequest.of(0, 1))
+            .stream()
             .findFirst()
             .orElse(null);
 
@@ -268,7 +287,6 @@ public class EventServiceImpl implements EventService {
             .toList();
 
     int totalUploadedClothCount = eventReservationImageRepository.countByReservation_Event_Id(id);
-
     int clothCountExcept4 = Math.max(0, totalUploadedClothCount - 4);
 
     return eventMapper.toDetail(event, isReserved, recent4, clothCountExcept4);
@@ -308,21 +326,32 @@ public class EventServiceImpl implements EventService {
       throw new CustomException(EventErrorCode.EVENT_ALREADY_RESERVED);
     }
 
-    EventReservation reservation = eventMapper.toReservation(event, user, request);
+    validateCapacityBeforeReserve(event);
 
-    eventReservationRepository.save(reservation);
-    ticketService.issueTicket(
-        TicketType.EVENT,
-        event.getId(),
-        user.getId(),
-        event.getDate() // 행사 필드에 종료 일자 추가시 종료 일자로 변경 필요
-        );
+    final EventReservation reservation;
+    try {
+      reservation = eventMapper.toReservation(event, user, request);
+      eventReservationRepository.save(reservation);
+    } catch (CustomException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("[EVENT] reserveEvent - reservation save failed, eventId={}", eventId, e);
+      throw new CustomException(EventErrorCode.EVENT_RESERVATION_CREATE_FAILED);
+    }
+
+    try {
+      ticketService.issueTicket(TicketType.EVENT, event.getId(), user.getId(), event.getEndDate());
+    } catch (CustomException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error("[EVENT] reserveEvent - ticket issue failed, eventId={}", eventId, e);
+      throw new CustomException(EventErrorCode.EVENT_RESERVATION_CREATE_FAILED);
+    }
 
     if (clothImageList != null && !clothImageList.isEmpty()) {
       for (MultipartFile f : clothImageList) {
         try {
           String url = s3Service.uploadFileAsWebp(PathName.EVENT, f);
-
           eventReservationImageRepository.save(
               EventReservationImage.builder().reservation(reservation).imageUrl(url).build());
         } catch (CustomException e) {
@@ -337,5 +366,41 @@ public class EventServiceImpl implements EventService {
     event.increaseReservedCount();
 
     return eventMapper.toReservationResponse(event);
+  }
+
+  /* =========================
+   * Validation
+   * ========================= */
+
+  private void validateEventInfoRequest(EventInfoRequest request) {
+    if (request == null) {
+      throw new CustomException(EventErrorCode.EVENT_CREATE_FAILED);
+    }
+
+    LocalDate startDate = request.getStartDate();
+    LocalDate endDate = request.getEndDate();
+
+    if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+      throw new CustomException(EventErrorCode.EVENT_INVALID_DATE_RANGE);
+    }
+
+    Integer capacity = request.getCapacity();
+    if (capacity != null && capacity < 1) {
+      throw new CustomException(EventErrorCode.EVENT_INVALID_CAPACITY);
+    }
+  }
+
+  private void validateCapacityBeforeReserve(Event event) {
+    Integer capacity = event.getCapacity();
+    Integer reserved = event.getTotalReservedCount();
+
+    if (capacity == null) {
+      return;
+    }
+
+    int reservedCount = (reserved == null) ? 0 : reserved;
+    if (reservedCount >= capacity) {
+      throw new CustomException(EventErrorCode.EVENT_CAPACITY_EXCEEDED);
+    }
   }
 }
