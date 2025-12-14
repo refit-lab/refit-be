@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sku.refit.domain.event.dto.request.EventRequest.*;
 import com.sku.refit.domain.event.dto.response.EventResponse.*;
+import com.sku.refit.domain.event.entity.EventStatus;
 
 /**
  * 행사(Event) 관련 주요 기능을 제공하는 서비스 인터페이스입니다.
@@ -157,4 +158,15 @@ public interface EventService {
    */
   EventReservationResponse reserveEvent(
       Long eventId, EventRsvRequest request, List<MultipartFile> clothImageList);
+
+  /**
+   * 행사 리스트를 페이지네이션으로 조회합니다.
+   *
+   * @param page 페이지 번호(0부터 시작)
+   * @param size 페이지 크기
+   * @param status 상태 필터(UPCOMING/ONGOING/ENDED), null이면 전체
+   * @param q 검색어(행사명/장소 부분일치), null/blank면 미적용
+   * @return 페이지 응답
+   */
+  EventPagedResponse getEvents(int page, int size, EventStatus status, String q);
 }

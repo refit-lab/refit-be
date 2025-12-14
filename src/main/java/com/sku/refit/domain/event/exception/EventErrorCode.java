@@ -37,6 +37,8 @@ public enum EventErrorCode implements BaseErrorCode {
       "EVENT050", "예약 이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
   EVENT_RESERVATION_IMAGES_DELETE_FAILED(
       "EVENT051", "예약 이미지 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+  EVENT_LIST_FETCH_FAILED("EVENT060", "행사 리스트 조회에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
   ;
 
   private final String code;

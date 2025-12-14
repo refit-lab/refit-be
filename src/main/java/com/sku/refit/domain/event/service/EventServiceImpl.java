@@ -6,7 +6,9 @@ package com.sku.refit.domain.event.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +19,13 @@ import com.sku.refit.domain.event.dto.response.EventResponse.EventCardResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventDetailResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventGroupResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventImageResponse;
+import com.sku.refit.domain.event.dto.response.EventResponse.EventPagedResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventReservationResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventSimpleResponse;
 import com.sku.refit.domain.event.entity.Event;
 import com.sku.refit.domain.event.entity.EventReservation;
 import com.sku.refit.domain.event.entity.EventReservationImage;
+import com.sku.refit.domain.event.entity.EventStatus;
 import com.sku.refit.domain.event.exception.EventErrorCode;
 import com.sku.refit.domain.event.mapper.EventMapper;
 import com.sku.refit.domain.event.repository.EventRepository;
@@ -401,6 +405,54 @@ public class EventServiceImpl implements EventService {
     int reservedCount = (reserved == null) ? 0 : reserved;
     if (reservedCount >= capacity) {
       throw new CustomException(EventErrorCode.EVENT_CAPACITY_EXCEEDED);
+    }
+  }
+
+  @Override
+  public EventPagedResponse getEvents(int page, int size, EventStatus status, String q) {
+
+    try {
+      LocalDate today = LocalDate.now();
+
+      Pageable pageable = PageRequest.of(page, size);
+
+      String keyword = (q == null || q.isBlank()) ? null : q.trim();
+
+      Page<Event> eventPage;
+
+      if (status == null) {
+        // 전체: ONGOING -> UPCOMING -> ENDED 우선 + startDate DESC
+        eventPage = eventRepository.findAllSortedByStatus(today, keyword, pageable);
+
+      } else if (status == EventStatus.ONGOING) {
+        eventPage = eventRepository.findOngoingSorted(today, keyword, pageable);
+
+      } else if (status == EventStatus.UPCOMING) {
+        eventPage = eventRepository.findUpcomingSorted(today, keyword, pageable);
+
+      } else if (status == EventStatus.ENDED) {
+        eventPage = eventRepository.findEndedSorted(today, keyword, pageable);
+
+      } else {
+        throw new CustomException(EventErrorCode.EVENT_LIST_FETCH_FAILED);
+      }
+
+      log.info(
+          "[EVENT] getEvents page={}, size={}, status={}, q={}, totalElements={}",
+          page,
+          size,
+          status,
+          q,
+          eventPage.getTotalElements());
+
+      return eventMapper.toPagedResponse(eventPage, today);
+
+    } catch (CustomException e) {
+      throw e;
+    } catch (Exception e) {
+      log.error(
+          "[EVENT] getEvents failed page={}, size={}, status={}, q={}", page, size, status, q, e);
+      throw new CustomException(EventErrorCode.EVENT_LIST_FETCH_FAILED);
     }
   }
 }

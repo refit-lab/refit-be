@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.sku.refit.domain.event.dto.request.EventRequest.*;
@@ -14,6 +15,7 @@ import com.sku.refit.domain.event.dto.response.EventResponse.*;
 import com.sku.refit.domain.event.entity.Event;
 import com.sku.refit.domain.event.entity.EventReservation;
 import com.sku.refit.domain.event.entity.EventReservationImage;
+import com.sku.refit.domain.event.entity.EventStatus;
 import com.sku.refit.domain.user.entity.User;
 
 @Component
@@ -122,5 +124,46 @@ public class EventMapper {
         .reserved(true)
         .totalReservedCount(event.getTotalReservedCount())
         .build();
+  }
+
+  public EventPagedResponse toPagedResponse(Page<Event> page, LocalDate today) {
+
+    List<EventListItem> items =
+        page.getContent().stream().map(event -> toItem(event, today)).toList();
+
+    return EventPagedResponse.builder()
+        .page(page.getNumber())
+        .size(page.getSize())
+        .totalElements(page.getTotalElements())
+        .totalPages(page.getTotalPages())
+        .hasNext(page.hasNext())
+        .items(items)
+        .build();
+  }
+
+  private EventListItem toItem(Event event, LocalDate today) {
+
+    return EventListItem.builder()
+        .eventId(event.getId())
+        .name(event.getName())
+        .startDate(event.getStartDate())
+        .location(event.getLocation())
+        .reservedCount(event.getTotalReservedCount() == null ? 0 : event.getTotalReservedCount())
+        .capacity(event.getCapacity())
+        .status(resolveStatus(event, today))
+        .build();
+  }
+
+  private EventStatus resolveStatus(Event event, LocalDate today) {
+
+    if (event.getStartDate().isAfter(today)) {
+      return EventStatus.UPCOMING;
+    }
+
+    if (event.getEndDate().isBefore(today)) {
+      return EventStatus.ENDED;
+    }
+
+    return EventStatus.ONGOING;
   }
 }

@@ -6,6 +6,8 @@ package com.sku.refit.domain.event.dto.response;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.sku.refit.domain.event.entity.EventStatus;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -150,5 +152,42 @@ public class EventResponse {
 
     @Schema(description = "종료된 행사")
     private EventSimpleResponse ended;
+  }
+
+  @Getter
+  @Builder
+  public static class EventPagedResponse {
+    private int page;
+    private int size;
+    private long totalElements;
+    private int totalPages;
+    private boolean hasNext;
+    private List<EventListItem> items;
+  }
+
+  @Getter
+  @Builder
+  public static class EventListItem {
+
+    @Schema(description = "행사 식별자", example = "1")
+    private Long eventId;
+
+    @Schema(description = "행사명", example = "겨울 의류 나눔 행사")
+    private String name;
+
+    @Schema(description = "시작 날짜", example = "2025-12-24")
+    private LocalDate startDate;
+
+    @Schema(description = "행사 장소", example = "서울 성동구")
+    private String location;
+
+    @Schema(description = "누적 예약 인원", example = "25")
+    private Integer reservedCount;
+
+    @Schema(description = "예약 정원", example = "100")
+    private Integer capacity;
+
+    @Schema(description = "행사 상태", example = "진행중")
+    private EventStatus status;
   }
 }
