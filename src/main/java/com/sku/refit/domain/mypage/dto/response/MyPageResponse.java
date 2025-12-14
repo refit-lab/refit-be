@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.sku.refit.domain.mypage.constant.TicketUseStatus;
+import com.sku.refit.domain.post.dto.response.PostDetailResponse;
 import com.sku.refit.domain.ticket.entity.TicketType;
 import com.sku.refit.domain.user.dto.response.UserDetailResponse;
 
@@ -76,6 +77,11 @@ public class MyPageResponse {
   @Getter
   @Builder
   public static class JoinedEventsResponse {
+    private int page;
+    private int size;
+    private long totalElements;
+    private int totalPages;
+    private boolean hasNext;
     private List<JoinedEventItem> items;
   }
 
@@ -141,5 +147,20 @@ public class MyPageResponse {
 
     @Schema(description = "변경량(g). 교환이면 +20", example = "20")
     private Long deltaG;
+  }
+
+  /* =========================
+   * Posts
+   * ========================= */
+
+  @Getter
+  @Builder
+  public static class MyPostsResponse {
+    private int page;
+    private int size;
+    private long totalElements;
+    private int totalPages;
+    private boolean hasNext;
+    private List<PostDetailResponse> items;
   }
 }

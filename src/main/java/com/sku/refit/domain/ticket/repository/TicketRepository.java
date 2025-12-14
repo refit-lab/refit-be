@@ -32,4 +32,17 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
   Optional<Ticket> findByTokenForUpdate(@Param("token") String token);
 
   Page<Ticket> findAllByUserId(Long userId, Pageable pageable);
+
+  @Query(
+      """
+      select t.targetId
+      from Ticket t
+      where t.userId = :userId
+        and t.type = :type
+        and t.usedAt is not null
+      group by t.targetId
+      order by max(t.usedAt) desc
+      """)
+  Page<Long> findJoinedEventIds(
+      @Param("userId") Long userId, @Param("type") TicketType type, Pageable pageable);
 }
