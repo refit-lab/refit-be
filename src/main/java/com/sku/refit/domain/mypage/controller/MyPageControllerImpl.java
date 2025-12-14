@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sku.refit.domain.mypage.dto.response.MyPageResponse.*;
 import com.sku.refit.domain.mypage.service.MyPageService;
-import com.sku.refit.domain.post.dto.response.PostDetailResponse;
-import com.sku.refit.global.page.response.InfiniteResponse;
 import com.sku.refit.global.response.BaseResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -28,15 +26,15 @@ public class MyPageControllerImpl implements MyPageController {
   }
 
   @Override
-  public ResponseEntity<BaseResponse<JoinedEventsResponse>> getJoinedEvents() {
-    return ResponseEntity.ok(BaseResponse.success(myPageService.getJoinedEvents()));
+  public ResponseEntity<BaseResponse<JoinedEventsResponse>> getJoinedEvents(
+      @RequestParam int page, @RequestParam int size) {
+    return ResponseEntity.ok(BaseResponse.success(myPageService.getJoinedEvents(page, size)));
   }
 
   @Override
-  public ResponseEntity<BaseResponse<InfiniteResponse<PostDetailResponse>>> getMyPosts(
-      Long lastPostId, Integer size) {
-
-    return ResponseEntity.ok(BaseResponse.success(myPageService.getMyPosts(lastPostId, size)));
+  public ResponseEntity<BaseResponse<MyPostsResponse>> getMyPosts(
+      @RequestParam int page, @RequestParam int size) {
+    return ResponseEntity.ok(BaseResponse.success(myPageService.getMyPosts(page, size)));
   }
 
   @Override

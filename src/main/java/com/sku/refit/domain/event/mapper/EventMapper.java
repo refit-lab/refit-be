@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.sku.refit.domain.event.dto.request.EventRequest.*;
@@ -14,6 +15,7 @@ import com.sku.refit.domain.event.dto.response.EventResponse.*;
 import com.sku.refit.domain.event.entity.Event;
 import com.sku.refit.domain.event.entity.EventReservation;
 import com.sku.refit.domain.event.entity.EventReservationImage;
+import com.sku.refit.domain.event.entity.EventStatus;
 import com.sku.refit.domain.user.entity.User;
 
 @Component
@@ -23,10 +25,12 @@ public class EventMapper {
     return Event.builder()
         .name(req.getName())
         .description(req.getDescription())
-        .date(req.getDate())
+        .startDate(req.getStartDate())
+        .endDate(req.getEndDate())
         .location(req.getLocation())
         .detailLink(req.getDetailLink())
         .thumbnailUrl(thumbnailUrl)
+        .capacity(req.getCapacity()) // null 허용
         .totalReservedCount(0)
         .build();
   }
@@ -41,8 +45,10 @@ public class EventMapper {
         .name(event.getName())
         .description(event.getDescription())
         .detailLink(event.getDetailLink())
-        .date(event.getDate())
+        .startDate(event.getStartDate())
+        .endDate(event.getEndDate())
         .location(event.getLocation())
+        .capacity(event.getCapacity())
         .recentImageUrlList(recent4)
         .clothCountExceptRecent4(clothCountExcept4)
         .build();
@@ -57,14 +63,14 @@ public class EventMapper {
    * ========================= */
 
   public EventCardResponse toUpcomingCard(Event event, LocalDate today) {
-    long dday = ChronoUnit.DAYS.between(today, event.getDate());
+    long dday = ChronoUnit.DAYS.between(today, event.getStartDate());
+
     return EventCardResponse.builder()
         .eventId(event.getId())
         .thumbnailUrl(event.getThumbnailUrl())
         .dday(dday)
         .name(event.getName())
         .description(event.getDescription())
-        .date(event.getDate())
         .location(event.getLocation())
         .build();
   }
@@ -74,7 +80,7 @@ public class EventMapper {
         .eventId(event.getId())
         .thumbnailUrl(event.getThumbnailUrl())
         .name(event.getName())
-        .date(event.getDate())
+        .startDate(event.getStartDate()) // DTO 스펙에 맞춤
         .location(event.getLocation())
         .build();
   }
@@ -99,6 +105,7 @@ public class EventMapper {
   /* =========================
    * Reservation Response
    * ========================= */
+
   public EventReservation toReservation(Event event, User user, EventRsvRequest request) {
     return EventReservation.builder()
         .event(event)
@@ -117,5 +124,46 @@ public class EventMapper {
         .reserved(true)
         .totalReservedCount(event.getTotalReservedCount())
         .build();
+  }
+
+  public EventPagedResponse toPagedResponse(Page<Event> page, LocalDate today) {
+
+    List<EventListItem> items =
+        page.getContent().stream().map(event -> toItem(event, today)).toList();
+
+    return EventPagedResponse.builder()
+        .page(page.getNumber())
+        .size(page.getSize())
+        .totalElements(page.getTotalElements())
+        .totalPages(page.getTotalPages())
+        .hasNext(page.hasNext())
+        .items(items)
+        .build();
+  }
+
+  private EventListItem toItem(Event event, LocalDate today) {
+
+    return EventListItem.builder()
+        .eventId(event.getId())
+        .name(event.getName())
+        .startDate(event.getStartDate())
+        .location(event.getLocation())
+        .reservedCount(event.getTotalReservedCount() == null ? 0 : event.getTotalReservedCount())
+        .capacity(event.getCapacity())
+        .status(resolveStatus(event, today))
+        .build();
+  }
+
+  private EventStatus resolveStatus(Event event, LocalDate today) {
+
+    if (event.getStartDate().isAfter(today)) {
+      return EventStatus.UPCOMING;
+    }
+
+    if (event.getEndDate().isBefore(today)) {
+      return EventStatus.ENDED;
+    }
+
+    return EventStatus.ONGOING;
   }
 }

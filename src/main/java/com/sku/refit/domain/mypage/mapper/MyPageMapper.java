@@ -15,6 +15,8 @@ import com.sku.refit.domain.event.entity.Event;
 import com.sku.refit.domain.mypage.constant.TicketUseStatus;
 import com.sku.refit.domain.mypage.dto.response.MyPageResponse.*;
 import com.sku.refit.domain.mypage.entity.CarbonReductionHistory;
+import com.sku.refit.domain.post.dto.response.PostDetailResponse;
+import com.sku.refit.domain.post.entity.Post;
 import com.sku.refit.domain.ticket.entity.Ticket;
 import com.sku.refit.domain.ticket.entity.TicketType;
 import com.sku.refit.domain.ticket.util.TicketQrPayloadFactory;
@@ -88,37 +90,33 @@ public class MyPageMapper {
    * Joined Events Response
    * ========================= */
 
-  public JoinedEventsResponse toJoinedEventsResponse(List<Event> events) {
-
-    List<JoinedEventItem> items = events.stream().map(this::toJoinedEventItem).toList();
-
-    return JoinedEventsResponse.builder().items(items).build();
-  }
-
   public JoinedEventItem toJoinedEventItem(Event event) {
     return JoinedEventItem.builder()
         .eventId(event.getId())
         .thumbnailUrl(event.getThumbnailUrl())
         .name(event.getName())
         .description(event.getDescription())
-        .date(event.getDate())
+        .date(event.getStartDate())
         .location(event.getLocation())
+        .build();
+  }
+
+  public JoinedEventsResponse toJoinedEventsResponse(Page<Long> eventIdPage, List<Event> events) {
+    List<JoinedEventItem> items = events.stream().map(this::toJoinedEventItem).toList();
+
+    return JoinedEventsResponse.builder()
+        .page(eventIdPage.getNumber())
+        .size(eventIdPage.getSize())
+        .totalElements(eventIdPage.getTotalElements())
+        .totalPages(eventIdPage.getTotalPages())
+        .hasNext(eventIdPage.hasNext())
+        .items(items)
         .build();
   }
 
   /* =========================
    * Home
    * ========================= */
-
-  public MyHomeResponse toUnauthenticatedHome() {
-    return MyHomeResponse.builder()
-        .isLoggedIn(false)
-        .user(null)
-        .exchangeCount(null)
-        .totalReducedCarbonG(null)
-        .carbonChangeList(List.of())
-        .build();
-  }
 
   public CarbonReductionHistory toCarbonHistory(User user, long deltaG, LocalDateTime now) {
     return CarbonReductionHistory.builder().user(user).changedAt(now).deltaG(deltaG).build();
@@ -142,6 +140,21 @@ public class MyPageMapper {
         .totalReducedCarbonG(
             user.getTotalReducedCarbonG() == null ? 0L : user.getTotalReducedCarbonG())
         .carbonChangeList(carbonChangeList)
+        .build();
+  }
+
+  /* =========================
+   * Posts
+   * ========================= */
+
+  public MyPostsResponse toMyPostsResponse(Page<Post> postPage, List<PostDetailResponse> items) {
+    return MyPostsResponse.builder()
+        .page(postPage.getNumber())
+        .size(postPage.getSize())
+        .totalElements(postPage.getTotalElements())
+        .totalPages(postPage.getTotalPages())
+        .hasNext(postPage.hasNext())
+        .items(items)
         .build();
   }
 
