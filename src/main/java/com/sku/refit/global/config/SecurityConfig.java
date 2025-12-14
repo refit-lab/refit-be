@@ -126,15 +126,15 @@ public class SecurityConfig {
                 .permitAll()
 
                 // 행사 + 마이페이지
-                .requestMatchers(HttpMethod.GET,
+                .requestMatchers(
+                    HttpMethod.GET,
                     "/api/events/{id}",
                     "/api/events/{id}/img",
                     "/api/events/upcoming",
                     "/api/events/group",
                     "/api/events/ended",
-                    "/api/my"
-                ).permitAll()
-
+                    "/api/my")
+                .permitAll()
                 .requestMatchers("/error")
                 .permitAll()
                 .requestMatchers(RegexRequestMatcher.regexMatcher(".*/admin($|/.*)"))
