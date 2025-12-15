@@ -68,9 +68,9 @@ public interface PostController {
                       type = "string",
                       allowableValues = {"FREE", "REPAIR", "INFO"},
                       example = "FREE"))
-          @RequestParam
+          @RequestParam(required = false)
           String category,
-      @Parameter(description = "마지막으로 조회한 게시글 식별자(첫 조회 시 생략)", example = "3")
+      @Parameter(description = "마지막으로 조회한 게시글 식별자(첫 조회 시 생략, 최신순이라서 식별자 값 감소)", example = "3")
           @RequestParam(required = false)
           Long lastPostId,
       @Parameter(description = "한 번에 조회할 게시글 개수", example = "3") @RequestParam(defaultValue = "3")
