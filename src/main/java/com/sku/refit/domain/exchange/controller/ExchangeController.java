@@ -64,7 +64,7 @@ public interface ExchangeController {
                       type = "string",
                       allowableValues = {"OUTER", "SHIRTS", "PANTS", "SHOES", "ACCESSORY"},
                       example = "OUTER"))
-          @RequestParam(defaultValue = "OUTER", required = false)
+          @RequestParam(required = false)
           String exchangeCategory,
       @Parameter(description = "위도", example = "37.544018")
           @RequestParam(defaultValue = "37.544018")

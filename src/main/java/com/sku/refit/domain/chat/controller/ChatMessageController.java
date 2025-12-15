@@ -28,6 +28,12 @@ public class ChatMessageController {
         "[WS CONTROLLER] sendMessage 호출됨 roomId={}, principal={}",
         request.getRoomId(),
         principal != null ? principal.getName() : "null");
+
+    if (principal == null) {
+      log.warn("[WS CONTROLLER] 인증되지 않은 사용자의 메시지 전송 시도");
+      return;
+    }
+
     chatService.sendMessage(request, principal);
   }
 }

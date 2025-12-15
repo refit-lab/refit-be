@@ -47,6 +47,6 @@ public class ChatControllerImpl implements ChatController {
   public ResponseEntity<BaseResponse<Void>> readMessages(Long roomId) {
 
     chatService.readMessages(roomId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(BaseResponse.success(null));
   }
 }
