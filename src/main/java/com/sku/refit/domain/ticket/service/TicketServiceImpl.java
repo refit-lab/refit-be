@@ -88,28 +88,17 @@ public class TicketServiceImpl implements TicketService {
 
   @Override
   public VerifyTicketResponse verifyTicket(VerifyTicketRequest request) {
-
     validateToken(request.getToken());
     LocalDate today = LocalDate.now();
 
-    try {
-      return ticketRepository
-          .findByTokenForUpdate(request.getToken())
-          .map(
-              ticket -> {
-                if (ticket.isExpired(today)) {
-                  return ticketMapper.toVerifyExpired(ticket);
-                }
-                return ticketMapper.toVerifyFound(ticket);
-              })
-          .orElseGet(ticketMapper::toVerifyNotFound);
-
-    } catch (CustomException e) {
-      throw e;
-    } catch (Exception e) {
-      log.error("[TICKET] verifyTicket - failed", e);
-      throw new CustomException(TicketErrorCode.TICKET_VERIFY_FAILED);
-    }
+    return ticketRepository
+        .findByToken(request.getToken())
+        .map(
+            ticket ->
+                ticket.isExpired(today)
+                    ? ticketMapper.toVerifyExpired(ticket)
+                    : ticketMapper.toVerifyFound(ticket))
+        .orElseGet(ticketMapper::toVerifyNotFound);
   }
 
   /* =========================
@@ -119,34 +108,19 @@ public class TicketServiceImpl implements TicketService {
   @Override
   @Transactional
   public ConsumeTicketResponse consumeTicket(ConsumeTicketRequest request) {
-
     validateToken(request.getToken());
 
     Ticket ticket =
         ticketRepository
-            .findByToken(request.getToken())
+            .findByTokenForUpdate(request.getToken())
             .orElseThrow(() -> new CustomException(TicketErrorCode.TICKET_NOT_FOUND));
 
-    try {
-      boolean alreadyUsed = ticket.isUsed();
-
-      if (!alreadyUsed) {
-        ticket.consume(LocalDateTime.now());
-      }
-
-      return ticketMapper.toConsume(ticket, !alreadyUsed);
-
-    } catch (CustomException e) {
-      throw e;
-    } catch (Exception e) {
-      log.error(
-          "[TICKET] consumeTicket - failed, ticketId={}, type={}, targetId={}",
-          ticket.getId(),
-          ticket.getType(),
-          ticket.getTargetId(),
-          e);
-      throw new CustomException(TicketErrorCode.TICKET_CONSUME_FAILED);
+    boolean alreadyUsed = ticket.isUsed();
+    if (!alreadyUsed) {
+      ticket.consume(LocalDateTime.now());
     }
+
+    return ticketMapper.toConsume(ticket, !alreadyUsed);
   }
 
   /* =========================

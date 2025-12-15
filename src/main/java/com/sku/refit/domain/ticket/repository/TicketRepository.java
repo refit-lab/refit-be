@@ -28,7 +28,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
       Long userId, TicketType type);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)
-  @Query("SELECT t FROM Ticket t WHERE t.token = :token")
+  @Query("select t from Ticket t where t.token = :token")
   Optional<Ticket> findByTokenForUpdate(@Param("token") String token);
 
   Page<Ticket> findAllByUserId(Long userId, Pageable pageable);

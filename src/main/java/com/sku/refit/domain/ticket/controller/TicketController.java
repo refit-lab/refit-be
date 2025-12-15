@@ -32,7 +32,9 @@ public interface TicketController {
       @RequestBody @Valid VerifyTicketRequest request);
 
   @PostMapping("/admin/consume")
-  @Operation(summary = "[관리자] 티켓 사용 처리", description = "token으로 티켓을 사용 처리합니다. (멱등 사용 처리)")
+  @Operation(
+      summary = "[관리자] 티켓 사용 처리",
+      description = "token으로 티켓을 사용 처리합니다. (consumed가 ture: 사용 O, consumed가 false: 사용 X)")
   ResponseEntity<BaseResponse<ConsumeTicketResponse>> consumeTicket(
       @RequestBody @Valid ConsumeTicketRequest request);
 
