@@ -167,7 +167,7 @@ public class PostServiceImpl implements PostService {
     } else {
       posts =
           postRepository
-              .findByPostCategoryAndIdLessThan(postCategory, lastPostId, pageable)
+              .findByPostCategoryContainingAndIdLessThan(category, lastPostId, pageable)
               .getContent();
     }
 
