@@ -27,8 +27,14 @@ public class EventRequest {
     @Schema(description = "행사 설명", example = "파티에 대한 짧은 설명입니다.")
     private String description;
 
-    @NotNull(message = "행사 날짜는 필수입니다.") @Schema(description = "행사 날짜", example = "2025-12-24")
-    private LocalDate date;
+    @NotNull(message = "행사 시작 날짜는 필수입니다.") @Schema(description = "시작 날짜", example = "2025-12-24")
+    private LocalDate startDate;
+
+    @NotNull(message = "행사 종료 날짜는 필수입니다.") @Schema(description = "종료 날짜", example = "2025-12-26")
+    private LocalDate endDate;
+
+    @Schema(description = "예약 정원", example = "100")
+    private Integer capacity;
 
     @NotBlank(message = "행사 장소는 필수입니다.")
     @Schema(description = "행사 장소", example = "서울 성동구")

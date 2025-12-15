@@ -8,6 +8,8 @@ import java.util.Optional;
 
 import jakarta.persistence.LockModeType;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +30,19 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query("SELECT t FROM Ticket t WHERE t.token = :token")
   Optional<Ticket> findByTokenForUpdate(@Param("token") String token);
+
+  Page<Ticket> findAllByUserId(Long userId, Pageable pageable);
+
+  @Query(
+      """
+      select t.targetId
+      from Ticket t
+      where t.userId = :userId
+        and t.type = :type
+        and t.usedAt is not null
+      group by t.targetId
+      order by max(t.usedAt) desc
+      """)
+  Page<Long> findJoinedEventIds(
+      @Param("userId") Long userId, @Param("type") TicketType type, Pageable pageable);
 }

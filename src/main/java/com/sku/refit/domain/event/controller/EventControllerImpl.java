@@ -19,8 +19,10 @@ import com.sku.refit.domain.event.dto.response.EventResponse.EventCardResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventDetailResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventGroupResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventImageResponse;
+import com.sku.refit.domain.event.dto.response.EventResponse.EventPagedResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventReservationResponse;
 import com.sku.refit.domain.event.dto.response.EventResponse.EventSimpleResponse;
+import com.sku.refit.domain.event.entity.EventStatus;
 import com.sku.refit.domain.event.service.EventService;
 import com.sku.refit.global.response.BaseResponse;
 
@@ -93,5 +95,12 @@ public class EventControllerImpl implements EventController {
 
     return ResponseEntity.ok(
         BaseResponse.success(eventService.reserveEvent(id, request, clothImageList)));
+  }
+
+  @Override
+  public ResponseEntity<BaseResponse<EventPagedResponse>> getEvents(
+      int page, int size, EventStatus status, String q) {
+
+    return ResponseEntity.ok(BaseResponse.success(eventService.getEvents(page, size, status, q)));
   }
 }

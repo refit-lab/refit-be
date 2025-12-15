@@ -30,7 +30,10 @@ public class TicketControllerImpl implements TicketController {
     return ResponseEntity.ok(
         BaseResponse.success(
             ticketService.issueTicket(
-                request.getType(), request.getTargetId(), request.getUserId())));
+                request.getType(),
+                request.getTargetId(),
+                request.getUserId(),
+                request.getExpiresAt())));
   }
 
   @Override

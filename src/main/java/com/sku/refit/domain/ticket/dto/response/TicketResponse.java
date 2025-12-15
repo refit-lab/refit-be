@@ -3,6 +3,7 @@
  */
 package com.sku.refit.domain.ticket.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.sku.refit.domain.ticket.entity.TicketType;
@@ -23,6 +24,7 @@ public class TicketResponse {
 
     private LocalDateTime issuedAt;
     private LocalDateTime usedAt;
+    private LocalDate expiresAt;
   }
 
   @Getter
@@ -39,6 +41,7 @@ public class TicketResponse {
 
     private LocalDateTime issuedAt;
     private LocalDateTime usedAt;
+    private LocalDate expiresAt;
   }
 
   @Getter
@@ -53,9 +56,9 @@ public class TicketResponse {
     private String qrPayload;
 
     private LocalDateTime usedAt;
+    private LocalDate expiresAt;
   }
 
-  /** 사용자 조회용: - EVENT: "사용한 행사"만 조회(usedAt != null) - CLOTH: "받은 티켓" 전체 조회(usedAt 상관 없음) */
   @Getter
   @Builder
   public static class MyTicketItemResponse {
@@ -68,5 +71,6 @@ public class TicketResponse {
 
     private LocalDateTime issuedAt;
     private LocalDateTime usedAt;
+    private LocalDate expiresAt;
   }
 }

@@ -3,6 +3,7 @@
  */
 package com.sku.refit.domain.ticket.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
@@ -22,7 +23,8 @@ import lombok.*;
       @Index(name = "idx_ticket_user", columnList = "user_id"),
       @Index(name = "idx_ticket_type_target", columnList = "type,target_id"),
       @Index(name = "idx_ticket_token", columnList = "token"),
-      @Index(name = "idx_ticket_used_at", columnList = "used_at")
+      @Index(name = "idx_ticket_used_at", columnList = "used_at"),
+      @Index(name = "idx_ticket_expires_at", columnList = "expires_at")
     })
 public class Ticket extends BaseTimeEntity {
 
@@ -52,6 +54,10 @@ public class Ticket extends BaseTimeEntity {
   @Column(name = "used_at")
   private LocalDateTime usedAt;
 
+  /** 만료일 (null = 만료 X) */
+  @Column(name = "expires_at")
+  private LocalDate expiresAt;
+
   /* =========================
    * Domain Logic
    * ========================= */
@@ -61,27 +67,21 @@ public class Ticket extends BaseTimeEntity {
     return usedAt != null;
   }
 
-  /** 티켓 사용 처리 (멱등) */
+  /** 만료 여부 (미사용 + expiresAt 존재 + 오늘 날짜 초과) */
+  public boolean isExpired(LocalDate today) {
+    return usedAt == null && expiresAt != null && today.isAfter(expiresAt);
+  }
+
   public void consume(LocalDateTime now) {
     if (this.usedAt != null) {
       return;
     }
-    this.usedAt = now;
-  }
 
-  /** 기본 도메인 유효성 */
-  public void validate() {
-    if (type == null) {
-      throw new IllegalStateException("Ticket type은 필수입니다.");
+    // 날짜 기준 만료 체크
+    if (isExpired(now.toLocalDate())) {
+      throw new IllegalStateException("만료된 티켓은 사용할 수 없습니다.");
     }
-    if (targetId == null) {
-      throw new IllegalStateException("Ticket targetId는 필수입니다.");
-    }
-    if (userId == null) {
-      throw new IllegalStateException("Ticket userId는 필수입니다.");
-    }
-    if (token == null || token.isBlank()) {
-      throw new IllegalStateException("Ticket token은 필수입니다.");
-    }
+
+    this.usedAt = now;
   }
 }

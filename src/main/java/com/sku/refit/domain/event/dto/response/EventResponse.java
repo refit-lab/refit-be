@@ -6,6 +6,8 @@ package com.sku.refit.domain.event.dto.response;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.sku.refit.domain.event.entity.EventStatus;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -25,7 +27,7 @@ public class EventResponse {
     @Schema(description = "행사 식별자", example = "1")
     private Long eventId;
 
-    @Schema(description = "누적 예약 인원(옷 수량 기준)", example = "25")
+    @Schema(description = "누적 예약 인원", example = "25")
     private Integer totalReservedCount;
 
     @Schema(description = "행사 대표 이미지 URL")
@@ -42,11 +44,17 @@ public class EventResponse {
 
     /* ===== 중간 ===== */
 
-    @Schema(description = "행사 날짜", example = "2025-12-24")
-    private LocalDate date;
+    @Schema(description = "시작 날짜", example = "2025-12-24")
+    private LocalDate startDate;
+
+    @Schema(description = "종료 날짜", example = "2025-12-26")
+    private LocalDate endDate;
 
     @Schema(description = "행사 장소", example = "서울 성동구")
     private String location;
+
+    @Schema(description = "예약 정원", example = "100")
+    private Integer capacity;
 
     /* ===== 하단 ===== */
 
@@ -106,9 +114,6 @@ public class EventResponse {
     @Schema(description = "행사 설명", example = "따뜻한 겨울을 위한 의류 기부 행사입니다.")
     private String description;
 
-    @Schema(description = "행사 날짜", example = "2025-12-24")
-    private LocalDate date;
-
     @Schema(description = "행사 장소", example = "서울 성동구")
     private String location;
   }
@@ -127,11 +132,14 @@ public class EventResponse {
     @Schema(description = "행사명", example = "겨울 의류 나눔 행사")
     private String name;
 
-    @Schema(description = "행사 날짜", example = "2025-12-24")
-    private LocalDate date;
+    @Schema(description = "시작 날짜", example = "2025-12-24")
+    private LocalDate startDate;
 
     @Schema(description = "행사 장소", example = "서울 성동구")
     private String location;
+
+    @Schema(description = "설명", example = "따뜻한 겨울을 위한 의류 기부 행사입니다.")
+    private String description;
   }
 
   @Getter
@@ -147,5 +155,42 @@ public class EventResponse {
 
     @Schema(description = "종료된 행사")
     private EventSimpleResponse ended;
+  }
+
+  @Getter
+  @Builder
+  public static class EventPagedResponse {
+    private int page;
+    private int size;
+    private long totalElements;
+    private int totalPages;
+    private boolean hasNext;
+    private List<EventListItem> items;
+  }
+
+  @Getter
+  @Builder
+  public static class EventListItem {
+
+    @Schema(description = "행사 식별자", example = "1")
+    private Long eventId;
+
+    @Schema(description = "행사명", example = "겨울 의류 나눔 행사")
+    private String name;
+
+    @Schema(description = "시작 날짜", example = "2025-12-24")
+    private LocalDate startDate;
+
+    @Schema(description = "행사 장소", example = "서울 성동구")
+    private String location;
+
+    @Schema(description = "누적 예약 인원", example = "25")
+    private Integer reservedCount;
+
+    @Schema(description = "예약 정원", example = "100")
+    private Integer capacity;
+
+    @Schema(description = "행사 상태", example = "진행중")
+    private EventStatus status;
   }
 }
