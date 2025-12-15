@@ -3,8 +3,6 @@
  */
 package com.sku.refit.domain.chat.entity;
 
-import com.sku.refit.domain.chat.exception.ChatErrorCode;
-import com.sku.refit.global.exception.CustomException;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -18,9 +16,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+import com.sku.refit.domain.chat.exception.ChatErrorCode;
 import com.sku.refit.domain.exchange.entity.ExchangePost;
 import com.sku.refit.domain.user.entity.User;
 import com.sku.refit.global.common.BaseTimeEntity;
+import com.sku.refit.global.exception.CustomException;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -68,11 +68,11 @@ public class ChatRoom extends BaseTimeEntity {
 
   public void markAsRead(Long userId, LocalDateTime time) {
     if (sender.getId().equals(userId)) {
-this.senderLastReadAt = time;
- } else if (receiver.getId().equals(userId)) {
-            this.receiverLastReadAt = time;
-          } else {
-                throw new CustomException(ChatErrorCode.CHAT_NOT_FOUND);
-          }
+      this.senderLastReadAt = time;
+    } else if (receiver.getId().equals(userId)) {
+      this.receiverLastReadAt = time;
+    } else {
+      throw new CustomException(ChatErrorCode.CHAT_NOT_FOUND);
+    }
   }
 }
