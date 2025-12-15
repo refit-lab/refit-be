@@ -28,6 +28,7 @@ import com.sku.refit.global.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "교환 게시글", description = "교환 게시글 관련 API")
@@ -50,10 +51,21 @@ public interface ExchangeController {
           ExchangePostRequest request);
 
   @GetMapping
-  @Operation(summary = "교환 게시글 목록(페이지) 조회 (위치 기반)")
+  @Operation(
+      summary = "교환 게시글 목록(페이지) 조회",
+      description = "교환 게시글 목록을 페이지로 조회합니다. 위치 기반과 카테고리의 선택 적용이 가능합니다.")
   ResponseEntity<BaseResponse<PageResponse<ExchangePostCardResponse>>> getExchangePostsByLocation(
       @Parameter(description = "페이지 번호", example = "1") @RequestParam Integer pageNum,
       @Parameter(description = "페이지 크기", example = "4") @RequestParam Integer pageSize,
+      @Parameter(
+              description = "게시글 카테고리",
+              schema =
+                  @Schema(
+                      type = "string",
+                      allowableValues = {"OUTER", "SHIRTS", "PANTS", "SHOES", "ACCESSORY"},
+                      example = "OUTER"))
+          @RequestParam(required = false)
+          String exchangeCategory,
       @Parameter(description = "위도", example = "37.544018")
           @RequestParam(defaultValue = "37.544018")
           Double latitude,

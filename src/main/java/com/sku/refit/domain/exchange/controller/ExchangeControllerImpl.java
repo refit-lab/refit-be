@@ -42,7 +42,11 @@ public class ExchangeControllerImpl implements ExchangeController {
   @Override
   public ResponseEntity<BaseResponse<PageResponse<ExchangePostCardResponse>>>
       getExchangePostsByLocation(
-          Integer pageNum, Integer pageSize, Double latitude, Double longitude) {
+          Integer pageNum,
+          Integer pageSize,
+          String exchangeCategory,
+          Double latitude,
+          Double longitude) {
 
     if (pageNum < 1) {
       throw new CustomException(PageErrorStatus.PAGE_NOT_FOUND);
@@ -55,7 +59,7 @@ public class ExchangeControllerImpl implements ExchangeController {
     PageResponse<ExchangePostCardResponse> exchangePostCardResponsePageResponse;
 
     exchangePostCardResponsePageResponse =
-        exchangeService.getExchangePostsByLocation(pageable, latitude, longitude);
+        exchangeService.getExchangePostsByLocation(pageable, exchangeCategory, latitude, longitude);
 
     return ResponseEntity.ok(BaseResponse.success(exchangePostCardResponsePageResponse));
   }

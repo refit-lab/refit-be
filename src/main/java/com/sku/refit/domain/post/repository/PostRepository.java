@@ -9,11 +9,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.sku.refit.domain.post.entity.Post;
+import com.sku.refit.domain.post.entity.PostCategory;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-  Page<Post> findByPostCategoryContaining(String category, Pageable pageable);
+  Page<Post> findByPostCategory(PostCategory category, Pageable pageable);
 
   Page<Post> findByPostCategoryContainingAndIdLessThan(
       String category, Long lastPostId, Pageable pageable);
