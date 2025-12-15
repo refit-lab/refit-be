@@ -155,20 +155,28 @@ public class PostServiceImpl implements PostService {
     Pageable pageable = PageRequest.of(0, size + 1, Sort.by(Sort.Direction.DESC, "id"));
     List<Post> posts;
 
-    PostCategory postCategory;
-    try {
-      postCategory = PostCategory.valueOf(category);
-    } catch (IllegalArgumentException e) {
-      throw new CustomException(PostErrorCode.INVALID_CATEGORY);
-    }
-
-    if (lastPostId == null) {
-      posts = postRepository.findByPostCategory(postCategory, pageable).getContent();
+    if (category == null || category.isBlank()) {
+      if (lastPostId == null) {
+        posts = postRepository.findAll(pageable).getContent();
+      } else {
+        posts = postRepository.findByIdLessThan(lastPostId, pageable).getContent();
+      }
     } else {
-      posts =
-          postRepository
-              .findByPostCategoryContainingAndIdLessThan(category, lastPostId, pageable)
-              .getContent();
+      PostCategory postCategory;
+      try {
+        postCategory = PostCategory.valueOf(category);
+      } catch (IllegalArgumentException e) {
+        throw new CustomException(PostErrorCode.INVALID_CATEGORY);
+      }
+
+      if (lastPostId == null) {
+        posts = postRepository.findByPostCategory(postCategory, pageable).getContent();
+      } else {
+        posts =
+            postRepository
+                .findByPostCategoryAndIdLessThan(postCategory, lastPostId, pageable)
+                .getContent();
+      }
     }
 
     boolean hasNext = posts.size() > size;
@@ -204,7 +212,7 @@ public class PostServiceImpl implements PostService {
                         user))
             .toList();
 
-    Long newLastCursor = posts.isEmpty() ? null : posts.getLast().getId();
+    Long newLastCursor = posts.isEmpty() ? null : posts.get(posts.size() - 1).getId();
 
     log.info(
         "[POST CATEGORY LIST] category={}, lastPostId={}, size={}", category, lastPostId, size);
