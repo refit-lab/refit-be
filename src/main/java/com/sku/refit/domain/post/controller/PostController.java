@@ -27,6 +27,7 @@ import com.sku.refit.global.response.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "커뮤니티 게시글", description = "커뮤니티 게시글 관련 API")
@@ -60,7 +61,15 @@ public interface PostController {
   @GetMapping
   @Operation(summary = "카테고리별 게시글 전체 조회", description = "특정 카테고리의 게시글 리스트를 조회합니다.")
   ResponseEntity<BaseResponse<InfiniteResponse<PostDetailResponse>>> getPostByCategory(
-      @RequestParam String category,
+      @Parameter(
+              description = "게시글 카테고리",
+              schema =
+                  @Schema(
+                      type = "string",
+                      allowableValues = {"FREE", "REPAIR", "INFO"},
+                      example = "FREE"))
+          @RequestParam
+          String category,
       @Parameter(description = "마지막으로 조회한 게시글 식별자(첫 조회 시 생략)", example = "3")
           @RequestParam(required = false)
           Long lastPostId,

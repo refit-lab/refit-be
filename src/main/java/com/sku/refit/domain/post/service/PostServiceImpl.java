@@ -155,12 +155,19 @@ public class PostServiceImpl implements PostService {
     Pageable pageable = PageRequest.of(0, size + 1, Sort.by(Sort.Direction.DESC, "id"));
     List<Post> posts;
 
+    PostCategory postCategory;
+    try {
+      postCategory = PostCategory.valueOf(category);
+    } catch (IllegalArgumentException e) {
+      throw new CustomException(PostErrorCode.INVALID_CATEGORY);
+    }
+
     if (lastPostId == null) {
-      posts = postRepository.findByPostCategoryContaining(category, pageable).getContent();
+      posts = postRepository.findByPostCategory(postCategory, pageable).getContent();
     } else {
       posts =
           postRepository
-              .findByPostCategoryContainingAndIdLessThan(category, lastPostId, pageable)
+              .findByPostCategoryAndIdLessThan(postCategory, lastPostId, pageable)
               .getContent();
     }
 
@@ -214,8 +221,6 @@ public class PostServiceImpl implements PostService {
         postRepository
             .findById(id)
             .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
-
-    post.increaseViews();
 
     post.increaseViews();
 
