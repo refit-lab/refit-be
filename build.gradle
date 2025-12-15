@@ -61,6 +61,9 @@ dependencies {
     // Image
     implementation("com.sksamuel.scrimage:scrimage-core:4.3.5")
     implementation("com.sksamuel.scrimage:scrimage-webp:4.3.5")
+
+    // WebSocket + STOMP
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {
