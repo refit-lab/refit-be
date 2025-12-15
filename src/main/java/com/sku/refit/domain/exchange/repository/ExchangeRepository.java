@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.sku.refit.domain.exchange.entity.ExchangeCategory;
 import com.sku.refit.domain.exchange.entity.ExchangePost;
 import com.sku.refit.domain.exchange.entity.ExchangeStatus;
 
@@ -35,5 +36,24 @@ public interface ExchangeRepository extends JpaRepository<ExchangePost, Long> {
       @Param("latitude") Double latitude,
       @Param("longitude") Double longitude,
       @Param("status") ExchangeStatus status,
+      Pageable pageable);
+
+  @Query(
+      """
+    SELECT e
+    FROM ExchangePost e
+    WHERE e.exchangeStatus = :status
+      AND e.exchangeCategory = :exchangeCategory
+    ORDER BY
+      function('ST_Distance_Sphere',
+        point(e.spotLongitude, e.spotLatitude),
+        point(:longitude, :latitude)
+      )
+  """)
+  Page<ExchangePost> findByDistanceAndStatusAndExchangeCategory(
+      @Param("latitude") Double latitude,
+      @Param("longitude") Double longitude,
+      @Param("status") ExchangeStatus status,
+      @Param("exchangeCategory") ExchangeCategory exchangeCategory,
       Pageable pageable);
 }

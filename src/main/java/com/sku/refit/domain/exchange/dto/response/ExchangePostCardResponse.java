@@ -14,6 +14,9 @@ import lombok.Getter;
 @Schema(title = "ExchangePostCardResponse DTO", description = "교환글 카드 형식 응답 반환")
 public class ExchangePostCardResponse {
 
+  @Schema(description = "교환 게시글 식별자", example = "1")
+  private Long exchangePostId;
+
   @Schema(description = "썸네일 이미지 URL")
   private String thumbnailImageUrl;
 

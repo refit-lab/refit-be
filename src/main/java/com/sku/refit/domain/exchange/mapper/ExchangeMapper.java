@@ -65,6 +65,7 @@ public class ExchangeMapper {
 
   public ExchangePostCardResponse toCardResponse(ExchangePost exchangePost) {
     return ExchangePostCardResponse.builder()
+        .exchangePostId(exchangePost.getId())
         .thumbnailImageUrl(exchangePost.getImageUrlList().getFirst())
         .category(exchangePost.getExchangeCategory())
         .title(exchangePost.getTitle())

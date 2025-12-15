@@ -81,13 +81,33 @@ public class ExchangeServiceImpl implements ExchangeService {
   @Override
   @Transactional(readOnly = true)
   public PageResponse<ExchangePostCardResponse> getExchangePostsByLocation(
-      Pageable pageable, Double latitude, Double longitude) {
+      Pageable pageable, String exchangeCategory, Double latitude, Double longitude) {
 
-    Page<ExchangePost> page =
-        exchangeRepository.findByDistanceAndStatus(
-            latitude, longitude, ExchangeStatus.BEFORE, pageable);
+    Page<ExchangePost> page;
+
+    if (exchangeCategory == null || exchangeCategory.isBlank()) {
+      page =
+          exchangeRepository.findByDistanceAndStatus(
+              latitude, longitude, ExchangeStatus.BEFORE, pageable);
+    } else {
+      ExchangeCategory category;
+      try {
+        category = ExchangeCategory.valueOf(exchangeCategory);
+      } catch (IllegalArgumentException e) {
+        throw new CustomException(ExchangeErrorCode.EXCHANGE_CATEGORY_INVALID);
+      }
+
+      page =
+          exchangeRepository.findByDistanceAndStatusAndExchangeCategory(
+              latitude, longitude, ExchangeStatus.BEFORE, category, pageable);
+    }
 
     Page<ExchangePostCardResponse> mappedPage = page.map(exchangeMapper::toCardResponse);
+
+    log.info(
+        "[ExchangePost READ] pageSize={}, pageNum={}",
+        mappedPage.getSize(),
+        mappedPage.getNumber());
 
     return pageMapper.toPageResponse(mappedPage);
   }
@@ -101,6 +121,8 @@ public class ExchangeServiceImpl implements ExchangeService {
         exchangeRepository
             .findByIdAndExchangeStatus(exchangePostId, ExchangeStatus.BEFORE)
             .orElseThrow(() -> new CustomException(ExchangeErrorCode.EXCHANGE_NOT_FOUND));
+
+    log.info("[ExchangePost READ] postId={}, userId={}", exchangePostId, user.getId());
 
     return exchangeMapper.toDetailResponse(exchangePost, user);
   }

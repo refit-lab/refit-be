@@ -34,7 +34,7 @@ public interface ExchangeService {
    * @return 교환 게시글 카드 페이지 응답
    */
   PageResponse<ExchangePostCardResponse> getExchangePostsByLocation(
-      Pageable pageable, Double latitude, Double longitude);
+      Pageable pageable, String exchangeCategory, Double latitude, Double longitude);
 
   ExchangePostDetailResponse getExchangePost(Long exchangePostId);
 
