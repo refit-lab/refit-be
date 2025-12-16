@@ -67,12 +67,27 @@ public class ChatServiceImpl implements ChatService {
       throw new CustomException(ChatErrorCode.CHAT_NOT_FOUND);
     }
 
-    ChatRoom room =
-        chatRoomRepository
-            .findByExchangePostIdAndUsers(postId, user.getId(), receiver.getId())
-            .orElseGet(() -> chatRoomRepository.save(chatMapper.toChatRoom(post, user, receiver)));
+    if (user.getId().equals(receiver.getId())) {
+      throw new CustomException(ChatErrorCode.CHAT_NOT_FOUND);
+    }
 
-    return chatMapper.toChatRoomResponse(room);
+    return chatRoomRepository
+        .findByExchangePostIdAndUsers(postId, user.getId(), receiver.getId())
+        .map(chatMapper::toChatRoomResponse)
+        .orElseGet(
+            () -> {
+              try {
+                ChatRoom newRoom = chatMapper.toChatRoom(post, user, receiver);
+                ChatRoom savedRoom = chatRoomRepository.save(newRoom);
+                return chatMapper.toChatRoomResponse(savedRoom);
+              } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                ChatRoom existingRoom =
+                    chatRoomRepository
+                        .findByExchangePostIdAndUsers(postId, user.getId(), receiver.getId())
+                        .orElseThrow(() -> new CustomException(ChatErrorCode.CHAT_NOT_FOUND));
+                return chatMapper.toChatRoomResponse(existingRoom);
+              }
+            });
   }
 
   @Transactional
