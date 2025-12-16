@@ -44,6 +44,7 @@ public class PostMapper {
         .isAuthor(user != null && post.getUser().getUsername().equals(user.getUsername()))
         .isLiked(isLiked)
         .category(post.getPostCategory())
+        .imageUrlList(post.getImageUrlList())
         .commentIdList(post.getCommentList().stream().map(Comment::getId).toList())
         .build();
   }

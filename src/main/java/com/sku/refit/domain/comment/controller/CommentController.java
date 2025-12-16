@@ -35,23 +35,23 @@ public interface CommentController {
       @RequestBody @Valid CommentRequest request,
       @Parameter(description = "댓글을 작성할 게시글 식별자", example = "1") @RequestParam Long postId);
 
-  @PostMapping("/{id}/like")
+  @PostMapping("/{commendId}/like")
   @Operation(summary = "댓글 좋아요 토글")
-  ResponseEntity<BaseResponse<Void>> toggleLike(@PathVariable Long id);
+  ResponseEntity<BaseResponse<Void>> toggleLike(@PathVariable Long commendId);
 
   @GetMapping
   @Operation(summary = "특정 게시글의 댓글 조회", description = "특정 게시글의 댓글 리스트를 조회합니다.")
   ResponseEntity<BaseResponse<List<CommentDetailResponse>>> getAllCommentsByPostId(
       @Parameter(description = "댓글을 작성할 게시글 식별자", example = "1") @RequestParam Long postId);
 
-  @PutMapping("{id}")
+  @PutMapping("{commendId}")
   @Operation(summary = "특정 댓글 수정", description = "특정 댓글의 내용을 수정합니다.")
   ResponseEntity<BaseResponse<CommentDetailResponse>> updateComment(
-      @Parameter(description = "댓글 식별자", example = "1") @PathVariable Long id,
+      @Parameter(description = "댓글 식별자", example = "1") @PathVariable Long commendId,
       @RequestBody @Valid CommentRequest request);
 
-  @DeleteMapping("{id}")
+  @DeleteMapping("{commentId}")
   @Operation(summary = "특정 댓글 삭제", description = "특정 댓글을 삭제합니다.(Hard Delete)")
   ResponseEntity<BaseResponse<Void>> deleteComment(
-      @Parameter(description = "댓글 식별자", example = "1") @PathVariable Long id);
+      @Parameter(description = "댓글 식별자", example = "1") @PathVariable Long commentId);
 }
