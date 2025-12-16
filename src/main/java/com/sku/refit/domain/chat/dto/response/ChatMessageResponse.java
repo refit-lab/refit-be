@@ -23,6 +23,9 @@ public class ChatMessageResponse {
   @Schema(description = "채팅 발신자", example = "김다입")
   private String senderNickname;
 
+  @Schema(description = "채팅 발신자 프로필 이미지")
+  private String senderProfileImageUrl;
+
   @Schema(description = "채팅 내용", example = "안녕하세요. 교환 원하시나요?")
   private String content;
 

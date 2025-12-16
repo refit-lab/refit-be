@@ -34,6 +34,7 @@ public class ChatMapper {
         .messageId(chatMessage.getId())
         .roomId(chatMessage.getChatRoom().getId())
         .senderNickname(chatMessage.getSender().getNickname())
+        .senderProfileImageUrl(chatMessage.getSender().getProfileImageUrl())
         .content(chatMessage.getContent())
         .createdAt(chatMessage.getCreatedAt())
         .build();
