@@ -24,6 +24,9 @@ public class CommentDetailResponse {
   @Schema(description = "댓글 작성자", example = "김다입")
   private String nickname;
 
+  @Schema(description = "댓글 작성자 프로필사진")
+  private String profileImageUrl;
+
   @Schema(description = "댓글 작성자 여부", example = "true")
   private Boolean isWriter;
 

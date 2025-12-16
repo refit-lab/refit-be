@@ -49,6 +49,7 @@ public class ExchangeMapper {
     return ExchangePostDetailResponse.builder()
         .exchangePostId(exchangePost.getId())
         .nickname(exchangePost.getUser().getNickname())
+        .profileImageUrl(exchangePost.getUser().getProfileImageUrl())
         .imageUrlList(exchangePost.getImageUrlList())
         .category(exchangePost.getExchangeCategory())
         .title(exchangePost.getTitle())

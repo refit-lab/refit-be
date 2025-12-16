@@ -36,6 +36,7 @@ public class CommentMapper {
         .commentId(comment.getId())
         .content(comment.getContent())
         .nickname(comment.getUser().getNickname())
+        .profileImageUrl(comment.getUser().getProfileImageUrl())
         .isWriter(comment.getUser().getId().equals(user.getId()))
         .createdAt(comment.getCreatedAt())
         .parentCommentId(comment.getParent() != null ? comment.getParent().getId() : null)

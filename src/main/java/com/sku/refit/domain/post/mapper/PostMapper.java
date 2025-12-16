@@ -41,6 +41,7 @@ public class PostMapper {
         .comments((long) post.getCommentList().size())
         .createdAt(post.getCreatedAt())
         .nickname(post.getUser().getNickname())
+        .profileImageUrl(post.getUser().getProfileImageUrl())
         .isAuthor(user != null && post.getUser().getUsername().equals(user.getUsername()))
         .isLiked(isLiked)
         .category(post.getPostCategory())
