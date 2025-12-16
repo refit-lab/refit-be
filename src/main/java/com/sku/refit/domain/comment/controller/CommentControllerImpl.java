@@ -34,9 +34,9 @@ public class CommentControllerImpl implements CommentController {
   }
 
   @Override
-  public ResponseEntity<BaseResponse<Void>> toggleLike(@PathVariable Long id) {
+  public ResponseEntity<BaseResponse<Void>> toggleLike(@PathVariable Long commentId) {
 
-    commentService.toggleLike(id);
+    commentService.toggleLike(commentId);
     return ResponseEntity.ok(BaseResponse.success());
   }
 
@@ -50,16 +50,16 @@ public class CommentControllerImpl implements CommentController {
 
   @Override
   public ResponseEntity<BaseResponse<CommentDetailResponse>> updateComment(
-      @PathVariable Long id, @Valid CommentRequest request) {
+      @PathVariable Long commentId, @Valid CommentRequest request) {
 
-    CommentDetailResponse response = commentService.updateComment(id, request);
+    CommentDetailResponse response = commentService.updateComment(commentId, request);
     return ResponseEntity.ok(BaseResponse.success(response));
   }
 
   @Override
-  public ResponseEntity<BaseResponse<Void>> deleteComment(@PathVariable Long id) {
+  public ResponseEntity<BaseResponse<Void>> deleteComment(@PathVariable Long commentId) {
 
-    commentService.deleteComment(id);
+    commentService.deleteComment(commentId);
     return ResponseEntity.ok(BaseResponse.success(null));
   }
 }
