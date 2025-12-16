@@ -34,6 +34,9 @@ public class ExchangePostDetailResponse {
   @Schema(description = "교환 제목", example = "스판 여성용 빈티지 청바지")
   private String title;
 
+  @Schema(description = "교환 설명", example = "두 번밖에 안 입어본 새 청바지입니다~")
+  private String description;
+
   @Schema(description = "옷 사이즈", example = "M")
   private ClothSize size;
 

@@ -52,6 +52,7 @@ public class ExchangeMapper {
         .imageUrlList(exchangePost.getImageUrlList())
         .category(exchangePost.getExchangeCategory())
         .title(exchangePost.getTitle())
+        .description(exchangePost.getDescription())
         .size(exchangePost.getClothSize())
         .status(exchangePost.getClothStatus())
         .preferCategoryList(exchangePost.getPreferCategories())
