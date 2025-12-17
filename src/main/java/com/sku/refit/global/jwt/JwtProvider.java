@@ -336,7 +336,7 @@ public class JwtProvider {
    */
   public void addJwtToCookie(HttpServletResponse response, String token, String name, long maxAge) {
     Cookie cookie = new Cookie(name, token);
-    cookie.setDomain("");
+    cookie.setDomain("refitlab.site");
     cookie.setHttpOnly(true);
     cookie.setSecure(true);
     cookie.setPath("/");
@@ -356,7 +356,7 @@ public class JwtProvider {
    */
   public void removeJwtCookie(HttpServletResponse response, String name) {
     Cookie cookie = new Cookie(name, null);
-    cookie.setDomain("");
+    cookie.setDomain("refitlab.site");
     cookie.setHttpOnly(true);
     cookie.setSecure(true);
     cookie.setPath("/");
